@@ -56,6 +56,27 @@ void Continent::printContinent() const{
     }
 }
 
+//-------------
+// Map
+//-------------
+Map::~Map(){
+    for(Territory* t: territories){
+        delete t;
+    }
+    for(Continent* c: continents){
+        delete c;
+    }
+}
+bool Map::validateMap(){
+    //TODO: DFS to validate every node is reachable
+}
+bool Map::validateContinents(){
+    //TODO: connected subgraph
+}
+bool Map::validateTerritories(){
+    //TODO: Territory -> One Continent
+}
+
 
 int main(){
     Territory* a1 = new Territory("A");

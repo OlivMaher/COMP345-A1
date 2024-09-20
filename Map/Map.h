@@ -45,3 +45,15 @@ class Continent{
         void printContinent() const;
 
 };
+class Map{
+    private:
+        vector<Territory*> territories; //List of every territory
+        vector<Continent*> continents; //List of every continent
+    public:
+        ~Map(); //Deconstructor
+        bool validateMap(); //Implement with Depth First Search
+        bool validateContinents(); //Validates if each Continent is a connected subgraph
+        bool validateTerritories(); //Validates if each territory belongs to one Continent
+
+
+};
