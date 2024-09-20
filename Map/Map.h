@@ -28,3 +28,20 @@ class Territory{
 
         void printTerritory() const;
 };
+class Continent{
+    private:
+        string name;
+        vector<Territory*> territories; //List of territories within the continent
+    public:
+        //Constructor
+        Continent(string name);
+
+        //Setters & Getters
+        string getName() const;
+
+        void addTerritories(Territory* territory);
+        const vector<Territory*>& getTerritories() const;
+
+        void printContinent() const;
+
+};

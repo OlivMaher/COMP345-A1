@@ -35,11 +35,42 @@ void Territory::printTerritory() const{
               << "Armies: " << armies << "\n";
 }
 
+//-------------
+// Continent
+//-------------
+Continent::Continent(string name): name(name) {}
+
+string Continent::getName() const{
+    return name;
+}
+void Continent::addTerritories(Territory* territory){
+    territories.push_back(territory);
+}
+const vector<Territory*>& Continent::getTerritories() const{
+    return territories;
+}
+void Continent::printContinent() const{
+    cout << "Continent: " << name << "\n" << "Territories: ";
+    for(Territory* territory: this->territories){
+        cout << territory->getName() << ", ";
+    }
+}
+
 
 int main(){
     Territory* a1 = new Territory("A");
-    a1->printTerritory();
+    Territory* b1 = new Territory("b");
+    Continent* one = new Continent("one");
+
+    one->addTerritories(a1);
+    one->addTerritories(b1);
+    one->printContinent();
+
+
+
     delete a1;
+    delete b1;
+    delete one;
 
     return 0;
 }
