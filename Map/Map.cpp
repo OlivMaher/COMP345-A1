@@ -70,12 +70,28 @@ Map::~Map(){
 bool Map::validateMap(){
     //TODO: DFS to validate every node is reachable
 }
+void Map::DFS(Territory* territory, vector<Territory*>& visited){
+    visited.push_back(territory);
+    for(Territory* adjacent: territory->getAdjacentTerritories()){
+        if(find(visited.begin(), visited.end(), adjacent) == visited.end()){
+            DFS(adjacent, visited);
+        }
+    }
+}
 bool Map::validateContinents(){
     //TODO: connected subgraph
 }
 bool Map::validateTerritories(){
     //TODO: Territory -> One Continent
 }
+
+//Adders
+void Map::addTerritory(Territory* territory){
+    territories.push_back(territory);
+}
+void Map::addContinent(Continent* continent){
+    continents.push_back(continent);
+}   
 
 
 int main(){
