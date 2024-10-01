@@ -6,6 +6,7 @@ using namespace std;
 // Territory
 //-------------
 
+Territory::Territory(string name, int x, int y, string continent): name(name), x(x), y(y), continent(continent) {}
 Territory::Territory(string name): name(name) {}
 
 string Territory::getName() const{
@@ -30,15 +31,13 @@ const vector<Territory*>& Territory::getAdjacentTerritories() const{
     return adjacentTerritories;
 }
 void Territory::printTerritory() const{
-    cout << "Territory: " << name << "\n"
-              << "Owner: " << owner << "\n"
-              << "Armies: " << armies << "\n";
+    cout << "\nTerritory: " << name << "\n-----------------------\n Continent: "<< continent <<" Owner: " << owner << " Armies: " << armies << "\n";
 }
 
 //-------------
 // Continent
 //-------------
-Continent::Continent(string name): name(name) {}
+Continent::Continent(string name, int bonus): name(name), bonus(bonus){}
 
 string Continent::getName() const{
     return name;
@@ -68,8 +67,15 @@ Map::~Map(){
     }
 }
 bool Map::validateMap(){
-    //TODO: DFS to validate every node is reachable
+    if(validateContinents() && validateTerritories()){
+        return true;
+    }
+    else{
+        return false;
+    }
+
 }
+//Checks if the graph is connected
 void Map::DFS(Territory* territory, vector<Territory*>& visited){
     visited.push_back(territory);
     for(Territory* adjacent: territory->getAdjacentTerritories()){
@@ -79,10 +85,38 @@ void Map::DFS(Territory* territory, vector<Territory*>& visited){
     }
 }
 bool Map::validateContinents(){
-    //TODO: connected subgraph
+    for (Continent* continent : continents) {
+        vector<Territory*> visited;
+        Territory* startTerritory = continent->getTerritories().front();
+        DFS(startTerritory, visited);
+
+        set<Territory*> visitedSet(visited.begin(), visited.end());
+        set<Territory*> continentTerritories(continent->getTerritories().begin(), continent->getTerritories().end());
+
+        if (visitedSet.size() != continentTerritories.size()) {
+            return false;
+        }
+    }
+    return true;
 }
+
 bool Map::validateTerritories(){
-    //TODO: Territory -> One Continent
+    set<Territory*> allTerritories;
+    for(Continent* continent: continents){
+        for(Territory* territory: continent->getTerritories()){
+            if(allTerritories.find(territory) != allTerritories.end()){
+                return false;
+            }
+            allTerritories.insert(territory);
+        }
+    }
+    if (allTerritories.size() != territories.size()){
+        return false;
+    }
+    else{
+        return true;    
+    }
+
 }
 
 //Adders
@@ -92,22 +126,79 @@ void Map::addTerritory(Territory* territory){
 void Map::addContinent(Continent* continent){
     continents.push_back(continent);
 }   
+//-------------
+// MapLoader
+//-------------
+
+void MapLoader::loadMap(string fileName){
+    Map map{};
+    ifstream inputFile(fileName);
+    if(!inputFile){
+        cout << "Error: Could not open file" << endl;
+        //exit(1);
+    }
+    string line;
+    string currentSection;
+    while(getline(inputFile, line)){
+        if(line.empty()){
+            continue;
+        }
+        if(line[0] == '['){
+            currentSection = line;
+            continue;
+        }
+        //Process Sections
+        if(currentSection == "[Map]"){
+            //Do nothing
+            continue;
+        }
+        else if (currentSection == "[Continents]")
+        {
+            istringstream ss(line);
+            string name;
+            int bonus;
+            getline(ss, name, '=');
+            ss >> bonus;
+            Continent* continent = new Continent(name, bonus);
+            map.addContinent(continent);
+            continent->printContinent();
+            delete continent;
+        }
+        else if(currentSection == "[Territories]"){
+            istringstream ss(line);
+            string name, continent, adjacent;
+            int x, y;  
+
+            getline(ss, name, ',');
+            ss >> x;
+            ss.ignore();
+            ss >> y;
+            ss.ignore();
+            getline(ss, continent, ',');
+            
+            Territory* territory = new Territory(name, x, y, continent);
+
+            while (getline(ss, adjacent, ',')){
+                Territory* temp = new Territory(adjacent);
+                territory->addAdjacentTerritories(temp);
+                delete temp;
+            }
+            map.addTerritory(territory);
+            territory->printTerritory();
+            delete territory;
+        }
+        
+    }
+    inputFile.close(); 
+
+}
+
 
 
 int main(){
-    Territory* a1 = new Territory("A");
-    Territory* b1 = new Territory("b");
-    Continent* one = new Continent("one");
-
-    one->addTerritories(a1);
-    one->addTerritories(b1);
-    one->printContinent();
-
-
-
-    delete a1;
-    delete b1;
-    delete one;
+    
+    MapLoader mapLoader{};
+    mapLoader.loadMap("c:\\Users\\olima\\dev\\COMP345\\COMP345-A1\\USA.map");
 
     return 0;
 }

@@ -2,6 +2,10 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <set>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -11,10 +15,12 @@ class Territory{
         string owner; //Player who has control of this territory TODO: Replace with player
         int armies = 0;
         vector<Territory*> adjacentTerritories; //Adjacency list of territories
+        int x, y; //Cordinates
+        string continent;
     public:
         //Constructor
+        Territory(string name, int x, int y, string continent);
         Territory(string name);
-
         //Setters & Getters 
         string getName() const;
 
@@ -33,9 +39,10 @@ class Continent{
     private:
         string name;
         vector<Territory*> territories; //List of territories within the continent
+        int bonus; // ?? unsure what the number represents
     public:
         //Constructor
-        Continent(string name);
+        Continent(string name, int bonus);
 
         //Setters & Getters
         string getName() const;
@@ -60,4 +67,8 @@ class Map{
         void addContinent(Continent* continent);
 
 
+};
+class MapLoader{
+    public:
+        void loadMap(string fileName);
 };
