@@ -31,7 +31,12 @@ const vector<Territory*>& Territory::getAdjacentTerritories() const{
     return adjacentTerritories;
 }
 void Territory::printTerritory() const{
-    cout << "\nTerritory: " << name << "\n-----------------------\n Continent: "<< continent <<" Owner: " << owner << " Armies: " << armies << "\n";
+    cout << "\nTerritory: " << name << "\n-----------------------\n Continent: "<< continent <<
+    " X-cord: "<< x << " Y-cord:" << y <<" Owner: " << owner << " Armies: " << 
+    armies <<"\nAdjacent Territories: ";
+    for(Territory* adjacent: this->adjacentTerritories){
+        cout << adjacent->getName() << " " ;
+    }
 }
 
 //-------------
@@ -49,10 +54,11 @@ const vector<Territory*>& Continent::getTerritories() const{
     return territories;
 }
 void Continent::printContinent() const{
-    cout << "Continent: " << name << "\n" << "Territories: ";
+    cout << "Continent: " << name << " Territories: ";
     for(Territory* territory: this->territories){
         cout << territory->getName() << ", ";
     }
+    cout <<endl;
 }
 
 //-------------
@@ -135,7 +141,7 @@ void MapLoader::loadMap(string fileName){
     ifstream inputFile(fileName);
     if(!inputFile){
         cout << "Error: Could not open file" << endl;
-        //exit(1);
+        exit(1);
     }
     string line;
     string currentSection;
@@ -147,6 +153,7 @@ void MapLoader::loadMap(string fileName){
             currentSection = line;
             continue;
         }
+
         //Process Sections
         if(currentSection == "[Map]"){
             //Do nothing
@@ -162,7 +169,7 @@ void MapLoader::loadMap(string fileName){
             Continent* continent = new Continent(name, bonus);
             map.addContinent(continent);
             continent->printContinent();
-            delete continent;
+            //delete continent;
         }
         else if(currentSection == "[Territories]"){
             istringstream ss(line);
@@ -180,12 +187,13 @@ void MapLoader::loadMap(string fileName){
 
             while (getline(ss, adjacent, ',')){
                 Territory* temp = new Territory(adjacent);
+                cout << temp->getName() << "\t,";
                 territory->addAdjacentTerritories(temp);
-                delete temp;
+                //delete temp;
             }
             map.addTerritory(territory);
             territory->printTerritory();
-            delete territory;
+            //delete territory;
         }
         
     }
@@ -193,12 +201,9 @@ void MapLoader::loadMap(string fileName){
 
 }
 
-
-
 int main(){
-    
     MapLoader mapLoader{};
-    mapLoader.loadMap("c:\\Users\\olima\\dev\\COMP345\\COMP345-A1\\USA.map");
-
+    mapLoader.loadMap("MapFiles\\Invalid.map");
     return 0;
 }
+
