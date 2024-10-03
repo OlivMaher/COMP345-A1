@@ -39,6 +39,20 @@ int Territory::getArmies() const {
     return armies;
 }
 
+string Territory::getContinent() const{
+    return continent;
+}
+
+void Territory::setCoordinates(int xCoord, int yCoord) {
+    x = xCoord;
+    y = yCoord;
+}
+
+void Territory::setContinent(const string& continentName) {
+    continent = continentName;
+}
+
+
 void Territory::addAdjacentTerritories(shared_ptr<Territory> territory) {
     adjacentTerritories.push_back(territory);
     cout << "Added adjacent territory: " << territory->getName() << " to " << name << endl;
@@ -104,13 +118,20 @@ bool Map::validateMap() {
     return result;
 }
 
-void Map::DFS(shared_ptr<Territory> territory, vector<shared_ptr<Territory>>& visited) {
+void Map::DFS(shared_ptr<Territory> territory, vector<shared_ptr<Territory>>& visited, const string& continentName) {
     visited.push_back(territory);
-    cout << "Visiting territory: " << territory->getName() << endl; // Debugging output
+    cout << "Visiting territory: " << territory->getName() << " (Continent: " << territory->getContinent() << ", Expected Continent: " << continentName << ")" << endl;
 
     for (const auto& adjacent : territory->getAdjacentTerritories()) {
-        if (find(visited.begin(), visited.end(), adjacent) == visited.end()) {
-            DFS(adjacent, visited);
+        // Check if adjacent territory belongs to the same continent
+        if (adjacent->getContinent() == continentName) {
+            // Only continue DFS if it hasn't been visited yet
+            if (find(visited.begin(), visited.end(), adjacent) == visited.end()) {
+                cout << "Continuing DFS to adjacent territory: " << adjacent->getName() << " (Continent: " << adjacent->getContinent() << ")" << endl;
+                DFS(adjacent, visited, continentName);
+            }
+        } else {
+            cout << "Skipping adjacent territory: " << adjacent->getName() << " (Different Continent: " << adjacent->getContinent() << ")" << endl;
         }
     }
 }
@@ -128,8 +149,10 @@ bool Map::validateContinents() {
         }
 
         auto startTerritory = continent->getTerritories().front();
-        cout << "Starting DFS from territory: " << startTerritory->getName() << endl;
-        DFS(startTerritory, visited);
+        cout << "Starting DFS from territory: " << startTerritory->getName() << " in continent " << continent->getName() << endl;
+        
+        // Pass the continent's name to restrict DFS to the same continent
+        DFS(startTerritory, visited, continent->getName());
 
         // Create sets for comparison
         set<shared_ptr<Territory>> visitedSet(visited.begin(), visited.end());
@@ -184,6 +207,15 @@ void Map::addContinent(shared_ptr<Continent> continent) {
     cout << "Added continent to map: " << continent->getName() << endl;
 }
 
+shared_ptr<Continent> Map::findContinentByName(const string& name) {
+    for (const auto& continent : continents) {
+        if (continent->getName() == name) {
+            return continent;
+        }
+    }
+    return nullptr; // If continent not found
+}
+
 ostream& operator<<(ostream& os, const Map& map) {
     os << "Map Details: \n";
     for (const auto& continent : map.continents) {
@@ -209,6 +241,7 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
     }
 
     unordered_map<string, shared_ptr<Territory>> territoriesMap;
+    unordered_map<string, shared_ptr<Continent>> continentsMap; // Added to find continents quickly
     string line;
     string currentSection;
 
@@ -235,6 +268,7 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
             if (getline(ss, name, '=') && (ss >> bonus)) {
                 auto continent = make_shared<Continent>(name, bonus);
                 map->addContinent(continent);
+                continentsMap[name] = continent; // Store in unordered_map
             } else {
                 cout << "Error: Invalid continent data in line: " << line << endl;
                 return nullptr;  // Early return if invalid data
@@ -248,9 +282,9 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
             // Check if the line has correct format
             getline(ss, name, ','); // Read territory name
             ss >> x;                // Read X coordinate
-            ss.ignore();           // Ignore comma
+            ss.ignore();            // Ignore comma
             ss >> y;                // Read Y coordinate
-            ss.ignore();           // Ignore comma
+            ss.ignore();            // Ignore comma
             getline(ss, continentName, ','); // Read continent name
 
             // Validate and create Territory
@@ -263,15 +297,32 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
             shared_ptr<Territory> territory;
             if (territoriesMap.find(name) != territoriesMap.end()) {
                 territory = territoriesMap[name];
+                // Update the territory's x, y, and continent fields
+                territory->setCoordinates(x, y);
+                territory->setContinent(continentName);
+                cout << "Updated territory: " << territory->getName() << " with continent: " << continentName << endl;
             } else {
                 territory = make_shared<Territory>(name, x, y, continentName);
                 territoriesMap[name] = territory;
-                map->addTerritory(territory);
+                map->addTerritory(territory);  // Add territory to map (not necessarily a continent)
             }
 
-            // Handle adjacent territories
+            // Add the territory to its continent
+            auto continent = map->findContinentByName(continentName);
+            if (continent) {
+                continent->addTerritories(territory);
+            } else {
+                cout << "Error: Continent " << continentName << " not found for territory: " << name << endl;
+                return nullptr;  // Fail if continent not found
+            }
+
+            // Handle adjacent territories (but do NOT add them to the same continent)
             string adjacent;
             while (getline(ss, adjacent, ',')) {
+                // Remove potential leading/trailing whitespace
+                adjacent.erase(0, adjacent.find_first_not_of(" \t"));
+                adjacent.erase(adjacent.find_last_not_of(" \t") + 1);
+
                 // Create or retrieve adjacent territory
                 shared_ptr<Territory> adjTerritory;
                 if (territoriesMap.find(adjacent) != territoriesMap.end()) {
@@ -280,7 +331,7 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
                     // Create a new Territory for adjacency if it doesn't exist yet
                     adjTerritory = make_shared<Territory>(adjacent);
                     territoriesMap[adjacent] = adjTerritory;
-                    map->addTerritory(adjTerritory);
+                    map->addTerritory(adjTerritory);  // Add adjacent territory to the map, but NOT to the continent
                 }
                 territory->addAdjacentTerritories(adjTerritory); // Link adjacent territories
             }

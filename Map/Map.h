@@ -32,6 +32,9 @@ public:
     string getOwner() const;
     void setArmies(const int&);
     int getArmies() const;
+    string getContinent() const;
+    void setCoordinates(int xCoord, int yCoord);
+    void setContinent(const string&);
 
     void addAdjacentTerritories(shared_ptr<Territory>);
     const vector<shared_ptr<Territory>>& getAdjacentTerritories() const;
@@ -67,11 +70,12 @@ private:
 public:
     ~Map(); // Destructor
     bool validateMap(); // Implement with Depth First Search
-    void DFS(shared_ptr<Territory> territory, vector<shared_ptr<Territory>>& visited); // Depth First Search
+    void DFS(shared_ptr<Territory> territory, vector<shared_ptr<Territory>>& visited, const string& continentName); // Depth First Search
     bool validateContinents(); // Validates if each Continent is a connected subgraph
     bool validateTerritories(); // Validates if each territory belongs to one Continent
     void addTerritory(shared_ptr<Territory> territory);
     void addContinent(shared_ptr<Continent> continent);
+    shared_ptr<Continent> findContinentByName(const string& name); 
     
     // Operator overloading for printing
     friend ostream& operator<<(ostream& os, const Map& map);

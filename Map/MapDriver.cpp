@@ -10,7 +10,7 @@ void testLoadMaps() {
     vector<string> mapFiles = {
         "MapFiles\\Alabama.map",
         "MapFiles\\USA.map",
-        "MapFiles\\InvalidMap.map"
+        "MapFiles\\Invalid.map"
     };
     MapLoader mapLoader;
     for (const string& fileName : mapFiles) {
