@@ -1,156 +1,233 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include "Map.h"
+// Orders.h
 
 #ifndef ORDERS_H
 #define ORDERS_H
 
+#include <iostream>
+#include <vector>
+#include <string>
+
+// Forward declarations
 class Player;
 class Territory;
 
+/**
+ * @brief Base Order Class
+ */
 class Order {
 public:
     // Constructors and Destructor
+
+    /**
+     * @brief Default constructor
+     */
     Order();
+
+    /**
+     * @brief Copy constructor
+     * @param other Order to copy
+     */
     Order(const Order& other);
+
+    /**
+     * @brief Destructor
+     */
     virtual ~Order();
 
-    virtual bool validate()= 0; //abstract methods
-    virtual void execute()=0;
+    // Assignment Operator
 
-    friend std::ostream& operator<<(std::ostream& os, const Order& order);  //overloaded OPs
+    /**
+     * @brief Assignment operator
+     * @param other Order to assign from
+     * @return Reference to this Order
+     */
+    Order& operator=(const Order& other);
+
+    // Pure Virtual Methods
+
+    /**
+     * @brief Validate the order
+     * @return True if valid, false otherwise
+     */
+    virtual bool validate() = 0;
+
+    /**
+     * @brief Execute the order
+     */
+    virtual void execute() = 0;
+
+    // Stream Insertion Operator
+
+    /**
+     * @brief Stream insertion operator
+     * @param os Output stream
+     * @param order Order to output
+     * @return Reference to output stream
+     */
+    friend std::ostream& operator<<(std::ostream& os, const Order& order);
+
+    // Getters
+
+    /**
+     * @brief Get the description of the order
+     * @return Description string
+     */
+    std::string getDescription() const;
+
+    /**
+     * @brief Get the effect of the order
+     * @return Effect string
+     */
+    std::string getEffect() const;
 
 protected:
-    std::string description;  //order description
-    bool executed; //indicate if order has been executed
-
-
+    std::string* description; /**< Description of the order */
+    std::string* effect;      /**< Effect of the order after execution */
+    bool* executed;           /**< Whether the order has been executed */
 };
 
+// Derived Order Classes
+
+/**
+ * @brief Deploy Order Class
+ */
 class Deploy : public Order {
 public:
-    //constructor and destructor
-    Deploy(Player* player, Territory* territory, int numArmies);
+    // Constructors and Destructor
+    Deploy();
     Deploy(const Deploy& other);
     ~Deploy();
 
-    //overide methods
+    Deploy& operator=(const Deploy& other);
+
     bool validate() override;
     void execute() override;
-
-private:
-    Player* player;
-    Territory* territory;
-    int numArmies;
-
 };
 
+/**
+ * @brief Advance Order Class
+ */
 class Advance : public Order {
 public:
-    Advance(Player* player, Territory* source, Territory target, int numArmies);
+    Advance();
     Advance(const Advance& other);
     ~Advance();
 
+    Advance& operator=(const Advance& other);
+
     bool validate() override;
     void execute() override;
-
-
-private:
-    Player* player;
-    Territory* source;
-    Territory* target;
-    int numArmies;
 };
 
+/**
+ * @brief Bomb Order Class
+ */
 class Bomb : public Order {
 public:
-    Bomb(Player* player, int numArmies, Territory target); //NOT DONE YET
+    Bomb();
     Bomb(const Bomb& other);
     ~Bomb();
 
+    Bomb& operator=(const Bomb& other);
+
     bool validate() override;
     void execute() override;
-
-    private:
-    Player* player;
-    // not done yet
-    int numArmies;
-    Territory* target;
 };
+
+/**
+ * @brief Blockade Order Class
+ */
 class Blockade : public Order {
 public:
-    Blockade(Player* player, int numArmies, Territory* target); //NOT DONE YET
-    Blockade(const Bomb& other);
+    Blockade();
+    Blockade(const Blockade& other);
     ~Blockade();
 
+    Blockade& operator=(const Blockade& other);
+
     bool validate() override;
     void execute() override;
-
-
-private:
-    Player* player;
-    // not done yet
-    int numArmies;
-    Territory* target;
 };
+
+/**
+ * @brief Airlift Order Class
+ */
 class Airlift : public Order {
 public:
-    Airlift(Player* player, int numArmies, Territory* target); //NOT DONE YET
-    Airlift(const Bomb& other);
+    Airlift();
+    Airlift(const Airlift& other);
     ~Airlift();
 
+    Airlift& operator=(const Airlift& other);
+
     bool validate() override;
     void execute() override;
-
-private:
-    Player* player;
-    // not done yet
-    int numArmies;
 };
+
+/**
+ * @brief Negotiate Order Class
+ */
 class Negotiate : public Order {
 public:
-    Negotiate(Player* player, int numArmies); //NOT DONE YET
-    Negotiate(const Bomb& other);
+    Negotiate();
+    Negotiate(const Negotiate& other);
     ~Negotiate();
+
+    Negotiate& operator=(const Negotiate& other);
 
     bool validate() override;
     void execute() override;
-
-private:
-    Player* player;
-    // not done yet
-    int numArmies;
-    Territory* target;
 };
 
-
+/**
+ * @brief OrdersList Class
+ */
 class OrdersList {
 public:
-    //constructors and desctructor
+    // Constructors and Destructor
     OrdersList();
     OrdersList(const OrdersList& other);
     ~OrdersList();
 
-    //Methods - done
-    void add(Order* order);                 //adds order to the list
-    void remove(int index);                 // removes an order from the list
-    void move(int fromIndex, int toIndex);  // moves an order within the list
+    OrdersList& operator=(const OrdersList& other);
 
-//overload ops
+    /**
+     * @brief Add an order to the list
+     * @param order Pointer to the order to add
+     */
+    void add(Order* order);
+
+    /**
+     * @brief Remove an order from the list
+     * @param index Index of the order to remove
+     */
+    void remove(int index);
+
+    /**
+     * @brief Move an order within the list
+     * @param fromIndex Current index of the order
+     * @param toIndex New index for the order
+     */
+    void move(int fromIndex, int toIndex);
+
+    /**
+     * @brief Get the list of orders
+     * @return Constant reference to the vector of order pointers
+     */
+    const std::vector<Order*>& getOrders() const;
+
+    // Stream Insertion Operator
+
+    /**
+     * @brief Stream insertion operator for OrdersList
+     * @param os Output stream
+     * @param ordersList OrdersList to output
+     * @return Reference to output stream
+     */
     friend std::ostream& operator<<(std::ostream& os, const OrdersList& ordersList);
 
-
 private:
-    std::vector<Order*> orders;         // STL Container to store orders as suggested by Prof Joey Paquet
-
-
-
-
+    std::vector<Order*>* orders; /**< Pointer to the vector of Order pointers */
 };
 
-
-
-
-
-#endif //ORDERS_H
+#endif // ORDERS_H
