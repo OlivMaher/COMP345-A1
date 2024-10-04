@@ -30,8 +30,8 @@ public:
     void returnToDeck(Card& card); // returns a card to the deck
     void showDeck(); // display deck
 
-    int totalCardsDeck();  // returs cardsInDeck
-    void updateDeck(int a); //updates the number of cards in the deck
+    int getDeck();  // returs cardsInDeck
+    void setDeck(int a); //updates the number of cards in the deck
 
 
 private:
@@ -44,8 +44,8 @@ public:
     Hand(); 
     void takeCard(Deck& deck); 
     void showHand(); // display hand
-    int totalCardsHand(); //// returs cardsInHand
-    void updateHand(int a); //updates the number of cards in the hand
+    int getHand(); //// returs cardsInHand
+    void setHand(int a); //updates the number of cards in the hand
     Card handToDeck(int a, Deck& deck); // returns card a to the deck
     Card copyCard_Hand(int a); // returns a copy of a card from the hand
 
