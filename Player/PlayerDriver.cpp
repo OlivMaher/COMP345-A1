@@ -6,7 +6,7 @@ using namespace std;
 
 
 
-void testPlayers(){
+void testPlayer(){
     Territory *t1 = new Territory("New York", 9, 2, "North America");
     Player * p1 = new Player("Jack");
     Advance* o1 = new Advance();
@@ -19,7 +19,7 @@ void testPlayers(){
     delete p1;
 }
 
-int main(){
-    testPlayers();
-    return 0;
-}
+// int main(){
+//     testPlayers();
+//     return 0;
+// }
