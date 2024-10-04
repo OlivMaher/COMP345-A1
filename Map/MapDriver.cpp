@@ -8,9 +8,9 @@ using namespace std;
 
 void testLoadMaps() {
     vector<string> mapFiles = {
-        "MapFiles\\Alabama.map",
-        "MapFiles\\USA.map",
-        "MapFiles\\Invalid.map"
+        "Map\\MapFiles\\Alabama.map",
+        "Map\\MapFiles\\USA.map",
+        "Map\\MapFiles\\Invalid.map"
     };
     MapLoader mapLoader;
     for (const string& fileName : mapFiles) {
@@ -21,7 +21,6 @@ void testLoadMaps() {
         } 
         else {
             cout << "Map successfully loaded: " << fileName << endl;
-            cout << "Validating map..." << endl;
             if (loadedMap->validateMap()) {
                 cout << "Validation successful for: " << fileName << endl;
                 cout << *loadedMap << endl;  // Display the map details using overloaded << operator
@@ -32,9 +31,3 @@ void testLoadMaps() {
     }
 }
 
-int main() {
-    cout << "Map Driver" << endl;
-    testLoadMaps();
-    cout << "Map Driver finished." << endl;
-    return 0;
-}

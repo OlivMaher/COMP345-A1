@@ -4,6 +4,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <set>
+#include "../Player/Player.h"
 using namespace std;
 
 //-------------
@@ -18,11 +19,11 @@ string Territory::getName() const {
     return name;
 }
 
-void Territory::setOwner(const Player& newOwner) {
-    owner = newOwner;
+void Territory::setOwner(Player* p) {
+    owner = p;
 }
 
-Player Territory::getOwner() const {
+Player* Territory::getOwner() const {
     return owner;
 }
 
@@ -107,7 +108,6 @@ Map::~Map() {
 }
 
 bool Map::validateMap() {
-    cout << "Validating map..." << endl;
     bool result = validateContinents() && validateTerritories();
     cout << "Map validation result: " << (result ? "Valid" : "Invalid") << endl;
     return result;
@@ -115,36 +115,28 @@ bool Map::validateMap() {
 
 void Map::DFS(shared_ptr<Territory> territory, vector<shared_ptr<Territory>>& visited, const string& continentName) {
     visited.push_back(territory);
-    cout << "Visiting territory: " << territory->getName() << " (Continent: " << territory->getContinent() << ", Expected Continent: " << continentName << ")" << endl;
 
     for (const auto& adjacent : territory->getAdjacentTerritories()) {
         // Check if adjacent territory belongs to the same continent
         if (adjacent->getContinent() == continentName) {
             // Only continue DFS if it hasn't been visited yet
             if (find(visited.begin(), visited.end(), adjacent) == visited.end()) {
-                cout << "Continuing DFS to adjacent territory: " << adjacent->getName() << " (Continent: " << adjacent->getContinent() << ")" << endl;
                 DFS(adjacent, visited, continentName);
             }
-        } else {
-            cout << "Skipping adjacent territory: " << adjacent->getName() << " (Different Continent: " << adjacent->getContinent() << ")" << endl;
         }
     }
 }
 
 bool Map::validateContinents() {
-    cout << "Validating continents..." << endl;
     for (const auto& continent : continents) {
-        cout << "Validating continent: " << continent->getName() << endl;
         vector<shared_ptr<Territory>> visited;
 
         // Start DFS from the first territory of the continent
         if (continent->getTerritories().empty()) {
-            cout << "Warning: Continent " << continent->getName() << " has no territories." << endl;
             continue; // Skip continents without territories
         }
 
         auto startTerritory = continent->getTerritories().front();
-        cout << "Starting DFS from territory: " << startTerritory->getName() << " in continent " << continent->getName() << endl;
         
         // Pass the continent's name to restrict DFS to the same continent
         DFS(startTerritory, visited, continent->getName());
@@ -152,18 +144,6 @@ bool Map::validateContinents() {
         // Create sets for comparison
         set<shared_ptr<Territory>> visitedSet(visited.begin(), visited.end());
         set<shared_ptr<Territory>> continentTerritories(continent->getTerritories().begin(), continent->getTerritories().end());
-
-        cout << "Visited territories: ";
-        for (const auto& territory : visitedSet) {
-            cout << territory->getName() << " ";
-        }
-        cout << endl;
-
-        cout << "Continent territories: ";
-        for (const auto& territory : continentTerritories) {
-            cout << territory->getName() << " ";
-        }
-        cout << endl;
 
         // Check if all continent territories were visited
         if (visitedSet.size() != continentTerritories.size()) {
@@ -176,7 +156,6 @@ bool Map::validateContinents() {
 }
 
 bool Map::validateTerritories() {
-    cout << "Validating territories..." << endl;
     set<shared_ptr<Territory>> allTerritories;
     for (const auto& continent : continents) {
         for (const auto& territory : continent->getTerritories()) {
@@ -194,12 +173,10 @@ bool Map::validateTerritories() {
 
 void Map::addTerritory(shared_ptr<Territory> territory) {
     territories.push_back(territory);
-    cout << "Added territory to map: " << territory->getName() << endl;
 }
 
 void Map::addContinent(shared_ptr<Continent> continent) {
     continents.push_back(continent);
-    cout << "Added continent to map: " << continent->getName() << endl;
 }
 
 shared_ptr<Continent> Map::findContinentByName(const string& name) {
@@ -284,7 +261,6 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
 
             // Validate and create Territory
             if (name.empty() || continentName.empty()) {
-                cout << "Error: Territory name or continent name is missing in line: " << line << endl;
                 return nullptr;  // Invalid territory data
             }
 
@@ -295,7 +271,6 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
                 // Update the territory's x, y, and continent fields
                 territory->setCoordinates(x, y);
                 territory->setContinent(continentName);
-                cout << "Updated territory: " << territory->getName() << " with continent: " << continentName << endl;
             } else {
                 territory = make_shared<Territory>(name, x, y, continentName);
                 territoriesMap[name] = territory;
@@ -307,7 +282,6 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
             if (continent) {
                 continent->addTerritories(territory);
             } else {
-                cout << "Error: Continent " << continentName << " not found for territory: " << name << endl;
                 return nullptr;  // Fail if continent not found
             }
 
