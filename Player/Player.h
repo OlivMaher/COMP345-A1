@@ -17,7 +17,7 @@ class Player{
         OrdersList * ordersList;
     public:
         //Constructor
-
+        Player();
         Player(string name);
         Player(const Player& other);
         Player& operator=(const Player& other);
@@ -27,8 +27,7 @@ class Player{
 
         void addTerritory(Territory*);
 
-        const vector<Territory*>  toDefend
-        () const; 
+        const vector<Territory*>  toDefend() const; 
         const vector<Territory*>  toAttack() const;
 
         void issueOrder(Order*);

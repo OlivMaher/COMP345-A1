@@ -7,6 +7,10 @@
 
 using namespace std;
 
+Player::Player(): ordersList(new OrdersList()) ,pHand(new Hand()) {
+    name = "Unnamed Player";
+}
+
 Player::Player(string name): name(name), ordersList(new OrdersList()) ,pHand(new Hand()) {}
 
 Player::Player(const Player& other){
