@@ -63,9 +63,6 @@ public:
     StartState();
     StartState(StartState& someState);
 
-    // Stream insertion operator
-    friend ostream & operator<< (ostream &out, const StartState& state);
-
     // Overriden methods
     void print(ostream& out) const override;
     void handleCommand(GameEngine& engine, const string& command) override;
@@ -77,9 +74,6 @@ public:
     // Constructors
     MapLoadedState();
     MapLoadedState(MapLoadedState& someState);
-
-    // Stream insertion operator
-    friend ostream & operator<< (ostream &out, const MapLoadedState& state);
 
     // Overriden methods
     void print(ostream& out) const override;
@@ -93,9 +87,6 @@ public:
     MapValidatedState();
     MapValidatedState(MapValidatedState& someState);
 
-    // Stream insertion operator
-    friend ostream & operator<< (ostream &out, const MapValidatedState& state);
-
     // Overriden methods
     void print(ostream& out) const override;
     void handleCommand(GameEngine& engine, const string& command) override;
@@ -107,9 +98,6 @@ public:
     // Constructors
     PlayersAddedState();
     PlayersAddedState(PlayersAddedState& someState);
-
-    // Stream insertion operator
-    friend ostream & operator<< (ostream &out, const PlayersAddedState& state);
 
     // Overriden methods
     void print(ostream& out) const override;
@@ -123,9 +111,6 @@ public:
     AssignReinforcementsState();
     AssignReinforcementsState(AssignReinforcementsState& someState);
 
-    // Stream insertion operator
-    friend ostream & operator<< (ostream &out, const AssignReinforcementsState& state);
-
     // Overriden methods
     void print(ostream& out) const override;
     void handleCommand(GameEngine& engine, const string& command) override;
@@ -137,9 +122,6 @@ public:
     // Constructors
     IssueOrdersState();
     IssueOrdersState(IssueOrdersState& someState);
-
-    // Stream insertion operator
-    friend ostream & operator<< (ostream &out, const IssueOrdersState& state);
 
     // Overriden methods
     void print(ostream& out) const override;
@@ -153,9 +135,6 @@ public:
     ExecuteOrdersState();
     ExecuteOrdersState(ExecuteOrdersState& someState);
 
-    // Stream insertion operator
-    friend ostream & operator<< (ostream &out, const ExecuteOrdersState& state);
-
     // Overriden methods
     void print(ostream& out) const override;
     void handleCommand(GameEngine& engine, const string& command) override;
@@ -167,9 +146,6 @@ public:
     // Constructors
     WinState();
     WinState(WinState& someState);
-
-    // Stream insertion operator
-    friend ostream & operator<< (ostream &out, const WinState& state);
 
     // Overriden methods
     void print(ostream& out) const override;
