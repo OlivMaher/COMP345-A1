@@ -5,7 +5,7 @@
 #include <string>
 #include "../Map/Map.h"
 #include "../Orders list/Orders.h"
-//#include "../Cards.h"
+#include "../Cards/Cards.h"
 
 using namespace std;
 
@@ -13,12 +13,12 @@ class Player{
     private:
         string name;
         vector<Territory*> territories; //List of territories controlled by the player
-        //Hand * pHand;
+        Hand  * pHand;
         OrdersList * ordersList;
     public:
         //Constructor
 
-        Player(string name, Territory* territory);
+        Player(string name);
         Player(const Player& other);
         Player& operator=(const Player& other);
         // Destructor
