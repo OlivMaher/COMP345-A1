@@ -1,17 +1,21 @@
 #include "Player.h"
 #include "../Map/Map.h"
 #include "../Orders list/Orders.h"
-#include "../Cards/Cards.h"
+//#include "../Cards/Cards.h"
 #include <cstdlib>
 #include <memory> 
 
 using namespace std;
 
-Player::Player(): ordersList(new OrdersList()) ,pHand(new Hand()) {
+Player::Player(): ordersList(new OrdersList()) 
+//,pHand(new Hand()) 
+{
     name = "Unnamed Player";
 }
 
-Player::Player(string name): name(name), ordersList(new OrdersList()) ,pHand(new Hand()) {}
+Player::Player(string name): name(name), ordersList(new OrdersList()) 
+//,pHand(new Hand()) 
+{}
 
 Player::Player(const Player& other){
     name = other.name;
@@ -19,7 +23,7 @@ Player::Player(const Player& other){
         territories.push_back(new Territory(*territory)); 
     }
     
-    pHand = new Hand(*other.pHand);
+    //pHand = new Hand(*other.pHand);
     ordersList = new OrdersList(*other.ordersList);
 
 }
@@ -30,8 +34,8 @@ Player& Player::operator=(const Player& other) {
         delete ordersList;  // Delete the existing ordersList
         ordersList = nullptr;  // Set to nullptr to avoid dangling pointers
 
-        delete pHand; 
-        pHand = nullptr;
+        //delete pHand; 
+        //pHand = nullptr;
         
         // Clean up existing territories
         for (Territory* territory : territories) {
@@ -50,7 +54,7 @@ Player& Player::operator=(const Player& other) {
 
         // Deep copy ordersList
         ordersList = new OrdersList(*other.ordersList);  // Create a new OrdersList
-        pHand = new Hand(*other.pHand);
+        //pHand = new Hand(*other.pHand);
     }
     return *this;  
 }
@@ -63,12 +67,12 @@ Player::~Player() {
   
     // Delete the ordersList if it's dynamically allocated
     delete ordersList;  // Deallocate memory for OrdersList
-    delete pHand;
+    //delete pHand;
 }
 
 void Player:: addTerritory(Territory* t){ 
     territories.push_back(t);
-    t->setOwner(name);
+    t->setOwner(this);
 }
 
 //returns an arbitrary list of territories to defend
