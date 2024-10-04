@@ -6,11 +6,12 @@
 #include <memory> 
 
 using namespace std;
+Player::Player(){}
 
 Player::Player(string name, Territory* t): name(name), ordersList(new OrdersList())
 //,pHand(new Hand()) 
 {
-    addTerritory(t);
+    //addTerritory(t, player);
 }
 
 Player::Player(const Player& other){
@@ -66,9 +67,9 @@ Player::~Player() {
     //delete pHand;
 }
 
-void Player:: addTerritory(Territory* t){ 
+void Player:: addTerritory(Territory* t, Player player){ 
     territories.push_back(t);
-    t->setOwner(name);
+    t->setOwner(player);
 }
 
 //returns an arbitrary list of territories to defend

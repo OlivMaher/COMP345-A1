@@ -9,13 +9,13 @@
 #include <sstream>
 #include <memory> 
 #include <unordered_map>
-
+#include "Player.h"
 using namespace std;
 
 class Territory {
 private:
     string name;
-    string owner; // Player who has control of this territory, TODO: Replace with Player
+    Player owner; // Player who has control of this territory
     int armies = 0;
     vector<shared_ptr<Territory>> adjacentTerritories; // Adjacency list of territories
     int x = 0, y = 0; // Coordinates
@@ -28,8 +28,8 @@ public:
 
     // Setters & Getters
     string getName() const;
-    void setOwner(const string&);
-    string getOwner() const;
+    void setOwner(const Player&);
+    Player getOwner() const;
     void setArmies(const int&);
     int getArmies() const;
     string getContinent() const;

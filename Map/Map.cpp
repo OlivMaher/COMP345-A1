@@ -4,30 +4,25 @@
 #include <sstream>
 #include <unordered_map>
 #include <set>
-
 using namespace std;
 
 //-------------
 // Territory
 //-------------
 
-Territory::Territory(const string& name, int x, int y, const string& continent) : name(name), x(x), y(y), continent(continent) {
-    cout << "Created Territory: " << name << endl;
-}
+Territory::Territory(const string& name, int x, int y, const string& continent) : name(name), x(x), y(y), continent(continent) {}
 
-Territory::Territory(const string& name) : name(name) {
-    cout << "Created Territory with name only: " << name << endl;
-}
+Territory::Territory(const string& name) : name(name) {};
 
 string Territory::getName() const {
     return name;
 }
 
-void Territory::setOwner(const string& newOwner) {
+void Territory::setOwner(const Player& newOwner) {
     owner = newOwner;
 }
 
-string Territory::getOwner() const {
+Player Territory::getOwner() const {
     return owner;
 }
 
