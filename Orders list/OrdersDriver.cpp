@@ -53,7 +53,3 @@ void testOrdersLists() {
     cout << "=== End of Orders List Test ===" << endl;
 }
 
-int main() {
-    testOrdersLists();
-    return 0;
-}

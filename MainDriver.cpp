@@ -1,8 +1,11 @@
 #include "Player/PlayerDriver.h"  // Directly include the .cpp file
-#include "Map/MapDriver.h"
-#include "Orders list/OrdersDriver.cpp"
-#include "Orders list/Orders.h"
+#include "Player/Player.h"
+#include "./Map/MapDriver.h"
+#include "./Map/Map.h"
+#include "./Orders list/Orders.h"
+#include "./Orders list/OrdersDriver.cpp"
 #include "./Game Engine/GameEngineDriver.h"
+#include "./Game Engine/GameEngine.h"
 
 
 int main() {
