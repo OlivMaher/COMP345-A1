@@ -94,7 +94,7 @@ Card Deck::draw(){
     else{
         srand(time(0)); // used for random draw form deck
         int ran = rand();
-        int take = ran % getDeck();
+        int take = ran % totalCardsDeck();
         cout << ran << " " << take << "\n";
         Card toRemove(cards[take]); 
 
