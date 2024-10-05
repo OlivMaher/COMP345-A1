@@ -81,9 +81,9 @@ public:
     std::string getEffect() const;
 
 protected:
-    std::string* description; /**< Description of the order */
-    std::string* effect;      /**< Effect of the order after execution */
-    bool* executed;           /**< Whether the order has been executed */
+    std::string* description; /** Description of the order */
+    std::string* effect;      /** Effect of the order after execution */
+    bool* executed;           /** Whether the order has been executed */
 };
 
 // Derived Order Classes
@@ -94,6 +94,9 @@ protected:
 class Deploy : public Order {
 public:
     // Constructors and Destructor
+ /**
+ * @brief Deploy Order Class
+ */
     Deploy();
     Deploy(const Deploy& other);
     ~Deploy();
