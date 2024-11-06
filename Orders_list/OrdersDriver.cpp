@@ -52,4 +52,3 @@ void testOrdersLists() {
     // Orders are deleted in OrdersList destructor
     cout << "=== End of Orders List Test ===" << endl;
 }
-

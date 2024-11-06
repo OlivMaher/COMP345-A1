@@ -19,7 +19,7 @@ void testPlayer(){
     delete p1;
 }
 
-// int main(){
-//     testPlayers();
-//     return 0;
-// }
+ int main(){
+    testPlayer();
+    return 0;
+ }

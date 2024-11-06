@@ -51,7 +51,7 @@ void Territory::setContinent(const string& continentName) {
 
 void Territory::addAdjacentTerritories(shared_ptr<Territory> territory) {
     adjacentTerritories.push_back(territory);
-    cout << "Added adjacent territory: " << territory->getName() << " to " << name << endl;
+    //cout << "Added adjacent territory: " << territory->getName() << " to " << name << endl;
 }
 
 const vector<shared_ptr<Territory>>& Territory::getAdjacentTerritories() const {
@@ -82,7 +82,7 @@ string Continent::getName() const {
 
 void Continent::addTerritories(shared_ptr<Territory> territory) {
     territories.push_back(territory);
-    cout << "Added territory: " << territory->getName() << " to continent: " << name << endl;
+    //cout << "Added territory: " << territory->getName() << " to continent: " << name << endl;
 }
 
 const vector<shared_ptr<Territory>>& Continent::getTerritories() const {

@@ -6,13 +6,13 @@
 
 
 
-int main() {
-    testLoadMaps();
-    testPlayer();
-    testCards();
-    testOrdersLists();
-    testGameStates();
+//int main() {
+//    testLoadMaps();
+//    testPlayer();
+//    testCards();
+//    testOrdersLists();
+//    testGameStates();
 
 
-    return 0;
-}
+//    return 0;
+//}
