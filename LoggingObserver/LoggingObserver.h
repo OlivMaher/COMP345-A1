@@ -10,6 +10,8 @@
 
 using namespace std;
 
+class Subject;
+
 class Observer {
     public:
         Observer(); //Default
@@ -44,7 +46,7 @@ class Iloggable {
 class LogObserver : public Observer {
     private:
         ofstream logFile;
-    private:
+    public:
         LogObserver();
         ~LogObserver();
         void update(Subject* subject) override;

@@ -1,14 +1,16 @@
 #ifndef COMMAND_PROCESSING_H
 #define COMMAND_PROCESSING_H
 
+
 #include <iostream>
 #include <string>
 #include <vector>
+#include "../LoggingObserver/LoggingObserver.h"
 
 using std::string;
 using std::ostream;
 
-class Command
+class Command : public Subject, public Iloggable
 {
 private:
     string command;
@@ -25,6 +27,7 @@ public:
     void saveEffect(const string &eff)
     {
         effect = eff;
+        notify();
     }
 
     // Getter methods
@@ -37,28 +40,34 @@ public:
     {
         return effect;
     }
+    string stringToLog() const override {
+        return "Command: " + command + ", Effect: " + effect;
+    }
 };
 
-class CommandProcessor
+class CommandProcessor : public Subject, public Iloggable
 {
 private:
     std::vector<Command> commands;
     Command* readCommand();
 
-protected:
-    void saveCommand(const Command& cmd);
-
 public:
 
     // Constructors
+    CommandProcessor();
     CommandProcessor(const CommandProcessor& processor);
     CommandProcessor(std::vector<Command> cmds);
     
     // other methods
+    void saveCommand(const Command& cmd);
     Command* getCommand();
     bool validate(const Command& cmd);
 
     friend ostream& operator << (ostream &out, const CommandProcessor& processor);
+
+    string stringToLog() const override {
+        return "CommandProcessor: " + to_string(commands.size()) + "commands processed.";
+    }
 };
 
 #endif

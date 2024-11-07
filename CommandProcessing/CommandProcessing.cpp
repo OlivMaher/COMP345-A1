@@ -1,5 +1,5 @@
 #include "CommandProcessing.h"
-#include "C:\Users\ramse\.vscode\risk engine\GameEngine.h"
+#include "../Game_Engine/GameEngine.h"
 
 // ---- Command class Definition ----
 Command::Command(const string& cmd) : command(cmd), effect("") {};
@@ -35,6 +35,7 @@ Command* CommandProcessor::readCommand()
 void CommandProcessor::saveCommand(const Command& cmd)
 {
     commands.push_back(cmd);
+    notify();
 }
 
 // Public methods
