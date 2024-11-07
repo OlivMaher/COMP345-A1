@@ -1,5 +1,4 @@
 #include "CommandProcessing.h"
-#include "../Game_Engine/GameEngine.h"
 
 // ---- Command class Definition ----
 Command::Command(const string& cmd) : command(cmd), effect("") {};
@@ -24,12 +23,12 @@ CommandProcessor::CommandProcessor(const CommandProcessor& processor)
 }
 
 // Private methods
-Command* CommandProcessor::readCommand()
+string CommandProcessor::readCommand()
 {
-    string someCommand;
-    std::cout << "Enter Command: ";
-    std::getline(std::cin, someCommand);
-    return new Command(someCommand);
+    string cmd;
+    cout << "Enter command: ";
+    getline(std::cin, cmd);
+    return cmd;
 }
 
 void CommandProcessor::saveCommand(const Command& cmd)
@@ -39,10 +38,12 @@ void CommandProcessor::saveCommand(const Command& cmd)
 }
 
 // Public methods
-Command* CommandProcessor::getCommand()
+Command CommandProcessor::getCommand()
 {
-    Command *aComand = readCommand();
-    saveCommand(*aComand);
+    string cmdString = readCommand();
+    Command cmd(cmdString);
+    saveCommand(cmd);
+    return cmd;
 }
 
 bool CommandProcessor::validate(const Command& cmd)

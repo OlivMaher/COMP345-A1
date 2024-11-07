@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "../LoggingObserver/LoggingObserver.h"
+#include "../Game_Engine/GameEngine.h"
 
 using std::string;
 using std::ostream;
@@ -49,7 +50,7 @@ class CommandProcessor : public Subject, public Iloggable
 {
 private:
     std::vector<Command> commands;
-    Command* readCommand();
+    string readCommand();
 
 public:
 
@@ -60,7 +61,7 @@ public:
     
     // other methods
     void saveCommand(const Command& cmd);
-    Command* getCommand();
+    Command getCommand();
     bool validate(const Command& cmd);
 
     friend ostream& operator << (ostream &out, const CommandProcessor& processor);
