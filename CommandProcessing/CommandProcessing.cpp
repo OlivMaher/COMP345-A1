@@ -21,6 +21,7 @@ CommandProcessor::CommandProcessor(const CommandProcessor& processor)
 {
     copy(processor.commands.begin(), processor.commands.end(), back_inserter(processor.commands));
 }
+CommandProcessor::CommandProcessor(GameEngine* engine) : gameEngine(engine){}
 
 // Private methods
 string CommandProcessor::readCommand()
@@ -46,8 +47,27 @@ Command CommandProcessor::getCommand()
     return cmd;
 }
 
-bool CommandProcessor::validate(const Command& cmd)
+bool CommandProcessor::validate(Command &cmd)
 {
+    if (gameEngine)
+    {
+        std::string result = gameEngine->handleCommand(cmd.getCommand());
+        if (result == "Command Valid")
+        {
+            cmd.saveEffect("Command executed successfully");
+            return true;
+        }
+        else
+        {
+            cmd.saveEffect(result); // Save the error or status message from the GameEngine
+            return false;
+        }
+    }
+    else
+    {
+        cmd.saveEffect("Game engine is not initialized");
+        return false;
+    }
 }
 
 ostream& operator <<(ostream &out,const CommandProcessor& processor)

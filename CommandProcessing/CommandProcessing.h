@@ -49,20 +49,22 @@ public:
 class CommandProcessor : public Subject, public Iloggable
 {
 private:
-    std::vector<Command> commands;
+    vector<Command> commands;
+    GameEngine *gameEngine;
     string readCommand();
 
 public:
 
     // Constructors
     CommandProcessor();
+    CommandProcessor(GameEngine *engine);
     CommandProcessor(const CommandProcessor& processor);
     CommandProcessor(std::vector<Command> cmds);
     
     // other methods
     void saveCommand(const Command& cmd);
     Command getCommand();
-    bool validate(const Command& cmd);
+    bool validate(Command& cmd);
 
     friend ostream& operator << (ostream &out, const CommandProcessor& processor);
 

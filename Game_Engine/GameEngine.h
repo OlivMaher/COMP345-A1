@@ -29,7 +29,7 @@ public:
     friend ostream & operator<< (ostream &out, const State& state);
 
     // Abstract methods
-    virtual void handleCommand(GameEngine& engine, const string& command) = 0;
+    virtual string handleCommand(GameEngine& engine, const string& command) = 0;
     string getStateName() const;
 };
 
@@ -52,7 +52,7 @@ public:
     // Stream insertion operator
     friend ostream & operator<< (ostream &out, State* state);
 
-    void handleCommand(const string& command);
+    string handleCommand(const string& command);
 };
 
 // State declarations
@@ -65,7 +65,7 @@ public:
 
     // Overriden methods
     void print(ostream& out) const override;
-    void handleCommand(GameEngine& engine, const string& command) override;
+    string handleCommand(GameEngine& engine, const string& command) override;
 };
 
 class MapLoadedState : public State
@@ -77,7 +77,7 @@ public:
 
     // Overriden methods
     void print(ostream& out) const override;
-    void handleCommand(GameEngine& engine, const string& command) override;
+    string handleCommand(GameEngine& engine, const string& command) override;
 };
 
 class MapValidatedState : public State
@@ -89,7 +89,7 @@ public:
 
     // Overriden methods
     void print(ostream& out) const override;
-    void handleCommand(GameEngine& engine, const string& command) override;
+    string handleCommand(GameEngine& engine, const string& command) override;
 };
 
 class PlayersAddedState : public State
@@ -101,7 +101,7 @@ public:
 
     // Overriden methods
     void print(ostream& out) const override;
-    void handleCommand(GameEngine& engine, const string& command) override;
+    string handleCommand(GameEngine& engine, const string& command) override;
 };
 
 class AssignReinforcementsState : public State
@@ -113,7 +113,7 @@ public:
 
     // Overriden methods
     void print(ostream& out) const override;
-    void handleCommand(GameEngine& engine, const string& command) override;
+    string handleCommand(GameEngine& engine, const string& command) override;
 };
 
 class IssueOrdersState : public State
@@ -125,7 +125,7 @@ public:
 
     // Overriden methods
     void print(ostream& out) const override;
-    void handleCommand(GameEngine& engine, const string& command) override;
+    string handleCommand(GameEngine& engine, const string& command) override;
 };
 
 class ExecuteOrdersState : public State
@@ -137,7 +137,7 @@ public:
 
     // Overriden methods
     void print(ostream& out) const override;
-    void handleCommand(GameEngine& engine, const string& command) override;
+    string handleCommand(GameEngine& engine, const string& command) override;
 };
 
 class WinState : public State
@@ -149,7 +149,7 @@ public:
 
     // Overriden methods
     void print(ostream& out) const override;
-    void handleCommand(GameEngine& engine, const string& command) override;
+    string handleCommand(GameEngine& engine, const string& command) override;
 };
 
 #endif

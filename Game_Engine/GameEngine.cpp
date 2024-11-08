@@ -26,12 +26,13 @@ ostream & operator<< (ostream &out, State* state)
     return out;
 }
 
-void GameEngine::handleCommand(const string& command) 
+string GameEngine::handleCommand(const string& command) 
 {
     if (currentState)
     {
-        currentState->handleCommand(*this, command);
+        return currentState->handleCommand(*this, command);
     }
+    return "No current State available";
 }
 
 // State logic implementation
@@ -80,7 +81,7 @@ void StartState::print(ostream& out) const
     out << "--------------------" << endl;
 }
 
-void StartState::handleCommand(GameEngine& engine, const string& command)
+string StartState::handleCommand(GameEngine& engine, const string& command)
 {
     if (command == "loadmap")
     {
@@ -88,10 +89,12 @@ void StartState::handleCommand(GameEngine& engine, const string& command)
         cout << "\nloading map..." << "\n";
         engine.setCurrentState(new MapLoadedState()); // Transition state
         cout << "transitioning to MapLoadedState" << endl;
+        return "loading map and state transitioning to MaploadedState";
     }
     else
     {
         cout << "\n!!! invalid command !!!" << endl;
+        return "!!! invalid command !!!";
     }
 }
 
@@ -113,12 +116,13 @@ void MapLoadedState::print(ostream& out) const
     out << "--------------------" << endl;
 }
 
-void MapLoadedState::handleCommand(GameEngine& engine, const string& command)
+string MapLoadedState::handleCommand(GameEngine& engine, const string& command)
 {
     if (command == "loadmap")
     {
         // load map function here
         cout << "\nloading map" << endl;
+        return "loading map";
     }
     else if (command == "validatemap")
     {
@@ -126,10 +130,12 @@ void MapLoadedState::handleCommand(GameEngine& engine, const string& command)
         cout << "\nvalidating map..." << "\n";
         engine.setCurrentState(new MapValidatedState());
         cout << "Transitioning to MapValidatedState" << endl;
+        return "validating map and State transitioning to MapValidatedState";
     }    
     else
     {
         cout << "\n!!! invalid command !!!" << endl;
+        return "!!! invalid command !!!";
     }
 }
 
@@ -150,7 +156,7 @@ void MapValidatedState::print(ostream& out) const
     out << "--------------------" << endl;
 }
 
-void MapValidatedState::handleCommand(GameEngine& engine, const string& command)
+string MapValidatedState::handleCommand(GameEngine& engine, const string& command)
 {
     if (command == "addplayer")
     {
@@ -158,10 +164,12 @@ void MapValidatedState::handleCommand(GameEngine& engine, const string& command)
         cout << "\nAdding player..." << "\n";
         engine.setCurrentState(new PlayersAddedState());
         cout << "Transitioning to PlayersAddedState" << endl;
+        return "Adding player and State transitioning to PlayersAddedState";
     }
     else
     {
         cout << "\n!!! invalid command !!!" << endl;
+        return "!!! invalid command !!!";
     }
 }
 
@@ -183,12 +191,13 @@ void PlayersAddedState::print(ostream& out) const
     out << "--------------------" << endl;
 }
 
-void PlayersAddedState::handleCommand(GameEngine& engine, const string& command)
+string PlayersAddedState::handleCommand(GameEngine& engine, const string& command)
 {
     if (command == "addplayer")
     {
         // load map function here
         cout << "\nAdding Player" << endl;
+        return "Adding player";
     }
     else if (command == "assigncountries")
     {
@@ -196,10 +205,12 @@ void PlayersAddedState::handleCommand(GameEngine& engine, const string& command)
         cout << "\nassigning countries..." << "\n";
         engine.setCurrentState(new AssignReinforcementsState());
         cout << "Transitioning to AssignReinforcementsState" << endl;
+        return "Assigning countries and State transitioning to AssignReinforcementsState";
     }    
     else
     {
         cout << "\n!!! invalid command !!!" << endl;
+        return "!!! invalid command !!!";
     }
 }
 
@@ -220,7 +231,7 @@ void AssignReinforcementsState::print(ostream& out) const
     out << "--------------------" << endl;
 }
 
-void AssignReinforcementsState::handleCommand(GameEngine& engine, const string& command)
+string AssignReinforcementsState::handleCommand(GameEngine& engine, const string& command)
 {
     if (command == "issueorder")
     {
@@ -228,10 +239,12 @@ void AssignReinforcementsState::handleCommand(GameEngine& engine, const string& 
         cout << "\nIssueing order..." << "\n";
         engine.setCurrentState(new IssueOrdersState());
         cout << "Transitioning to IssueOrdersState" << endl;
+        return "Issueing order and State transitioning to IssueOrdersState";
     }    
     else
     {
         cout << "\n!!! invalid command !!!" << endl;
+        return "!!! invalid command !!!";
     }
 }
 
@@ -253,12 +266,13 @@ void IssueOrdersState::print(ostream& out) const
     out << "--------------------" << endl;
 }
 
-void IssueOrdersState::handleCommand(GameEngine& engine, const string& command)
+string IssueOrdersState::handleCommand(GameEngine& engine, const string& command)
 {
     if (command == "issueorder")
     {
         // issue order function here
         cout << "\nIssueing order" << endl;
+        return "Issueing order";
     }
     else if (command == "endissueorders")
     {
@@ -266,10 +280,12 @@ void IssueOrdersState::handleCommand(GameEngine& engine, const string& command)
         cout << "\nending issueing orders..." << "\n";
         engine.setCurrentState(new ExecuteOrdersState());
         cout << "Transitioning to ExecuteOrdersState" << endl;
+        return "Ending issueing orders and State transitioning to ExecuteOrdersState";
     }    
     else
     {
         cout << "\n!!! invalid command !!!" << endl;
+        return "!!! invalid command !!!";
     }
 }
 
@@ -292,12 +308,13 @@ void ExecuteOrdersState::print(ostream& out) const
     out << "--------------------" << endl;
 }
 
-void ExecuteOrdersState::handleCommand(GameEngine& engine, const string& command)
+string ExecuteOrdersState::handleCommand(GameEngine& engine, const string& command)
 {
     if (command == "execorder")
     {
         // Execute order function here
         cout << "\nExecuting order..." << endl;
+        return "Executing order";
     }
     else if (command == "endexecorder")
     {
@@ -305,6 +322,7 @@ void ExecuteOrdersState::handleCommand(GameEngine& engine, const string& command
         cout << "\nending executing orders..." << "\n";
         engine.setCurrentState(new AssignReinforcementsState());
         cout << "Transitioning to AssignReinforcementsState" << endl;
+        return "Ending executing orders and State transitioning to AssignReinforcementsState";
     }
     else if (command == "win")
     {
@@ -312,10 +330,12 @@ void ExecuteOrdersState::handleCommand(GameEngine& engine, const string& command
         cout << "\nGame Over, you won!" << "\n";
         engine.setCurrentState(new WinState());
         cout << "Transitioning to WinState" << endl;
+        return "Game won and State Transitioning to WinState";
     }    
     else
     {
         cout << "\n!!! invalid command !!!" << endl;
+        return "!!! invalid command !!!";
     }
 }
 
@@ -337,7 +357,7 @@ void WinState::print(ostream& out) const
     out << "--------------------" << endl;
 }
 
-void WinState::handleCommand(GameEngine& engine, const string& command)
+string WinState::handleCommand(GameEngine& engine, const string& command)
 {
     if (command == "play")
     {
@@ -345,9 +365,11 @@ void WinState::handleCommand(GameEngine& engine, const string& command)
         cout << "\nRestarting Game..." << "\n";
         engine.setCurrentState(new StartState());
         cout << "Transitioning to StartState" << endl;
+        return "Restarting game and State Transitioning to StartState";
     }
     else
     {
         cout << "\n!!! invalid command !!!" << endl;
+        return "!!! invalid command !!!";
     }
 }
