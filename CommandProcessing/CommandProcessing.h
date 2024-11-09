@@ -58,8 +58,7 @@ public:
     // Constructors
     CommandProcessor();
     CommandProcessor(GameEngine *engine);
-    CommandProcessor(const CommandProcessor& processor);
-    CommandProcessor(std::vector<Command> cmds);
+    CommandProcessor(CommandProcessor &processor);
     
     // other methods
     void saveCommand(const Command& cmd);

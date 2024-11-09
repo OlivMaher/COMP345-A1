@@ -12,14 +12,14 @@ ostream & operator<< (ostream &out, const Command &cmd)
 }
 
 // ---- CommandProcessor class definition ----
-// Deep copy of vectors for constructors
-CommandProcessor::CommandProcessor(std::vector<Command> cmds)
+// Constructors
+CommandProcessor::CommandProcessor(CommandProcessor& processor)
 {
-    copy(cmds.begin(), cmds.end(), back_inserter(commands));
-}
-CommandProcessor::CommandProcessor(const CommandProcessor& processor)
-{
-    copy(processor.commands.begin(), processor.commands.end(), back_inserter(processor.commands));
+    for (const auto& cmd : processor.commands)
+    {
+        commands.push_back(cmd);
+    }
+    gameEngine = processor.gameEngine;
 }
 CommandProcessor::CommandProcessor(GameEngine* engine) : gameEngine(engine){}
 
@@ -32,7 +32,7 @@ string CommandProcessor::readCommand()
     return cmd;
 }
 
-void CommandProcessor::saveCommand(const Command& cmd)
+void CommandProcessor::saveCommand(const Command& cmd) 
 {
     commands.push_back(cmd);
     notify();
@@ -52,9 +52,9 @@ bool CommandProcessor::validate(Command &cmd)
     if (gameEngine)
     {
         std::string result = gameEngine->handleCommand(cmd.getCommand());
-        if (result == "Command Valid")
+        if (result != "!!! invalid command !!!")
         {
-            cmd.saveEffect("Command executed successfully");
+            cmd.saveEffect(result);
             return true;
         }
         else
@@ -72,8 +72,10 @@ bool CommandProcessor::validate(Command &cmd)
 
 ostream& operator <<(ostream &out,const CommandProcessor& processor)
 {
+    out << "\nThe commands currently stored are: ";
     for(auto i = processor.commands.begin(); i != processor.commands.end(); i++)
     {
-        std::cout << "\nThe commands currently stored are: " << *i;
+        out << "\n" << *i;
     }
+    return out;
 }
