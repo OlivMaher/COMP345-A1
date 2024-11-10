@@ -267,7 +267,7 @@ void IssueOrdersState::print(ostream& out) const
 {
     out << "The available commands for this state are:" << "\n";
     out << "issueorder" << "\n";
-    out << "endissueorders" << "\n";
+    out << "endissueorder" << "\n";
     out << "--------------------" << endl;
 }
 
