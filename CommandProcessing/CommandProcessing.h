@@ -59,7 +59,7 @@ public:
     friend ostream& operator << (ostream &out, const CommandProcessor& processor);
 
     string stringToLog() const override{
-        return "CommandProcessor: " + to_string(commands.size()) + "commands processed.";
+        return "CommandProcessor: " + to_string(commands.size()) + " commands processed.";
     }
 };
 

@@ -98,7 +98,7 @@ string StartState::handleCommand(GameEngine& engine, const string& command)
     }
     else
     {
-        cout << "\n!!! invalid command !!!" << endl;
+        cout << "\n!!! invalid command !!!" << command <<  endl;
         return "!!! invalid command !!!";
     }
 }
@@ -139,7 +139,7 @@ string MapLoadedState::handleCommand(GameEngine& engine, const string& command)
     }    
     else
     {
-        cout << "\n!!! invalid command !!!" << endl;
+        cout << "\n!!! invalid command !!!" << command << endl;
         return "!!! invalid command !!!";
     }
 }
@@ -173,7 +173,7 @@ string MapValidatedState::handleCommand(GameEngine& engine, const string& comman
     }
     else
     {
-        cout << "\n!!! invalid command !!!" << endl;
+        cout << "\n!!! invalid command !!!" << command <<  endl;
         return "!!! invalid command !!!";
     }
 }
@@ -214,7 +214,7 @@ string PlayersAddedState::handleCommand(GameEngine& engine, const string& comman
     }    
     else
     {
-        cout << "\n!!! invalid command !!!" << endl;
+        cout << "\n!!! invalid command !!!" << command << endl;
         return "!!! invalid command !!!";
     }
 }
@@ -248,7 +248,7 @@ string AssignReinforcementsState::handleCommand(GameEngine& engine, const string
     }    
     else
     {
-        cout << "\n!!! invalid command !!!" << endl;
+        cout << "\n!!! invalid command !!!" << command <<  endl;
         return "!!! invalid command !!!";
     }
 }
@@ -279,7 +279,7 @@ string IssueOrdersState::handleCommand(GameEngine& engine, const string& command
         cout << "\nIssueing order" << endl;
         return "Issueing order";
     }
-    else if (command == "endissueorders")
+    else if (command == "endissueorder")
     {
         //end issue order function here
         cout << "\nending issueing orders..." << "\n";
@@ -289,7 +289,7 @@ string IssueOrdersState::handleCommand(GameEngine& engine, const string& command
     }    
     else
     {
-        cout << "\n!!! invalid command !!!" << endl;
+        cout << "\n!!! invalid command !!!" << command << endl;
         return "!!! invalid command !!!";
     }
 }
@@ -339,7 +339,7 @@ string ExecuteOrdersState::handleCommand(GameEngine& engine, const string& comma
     }    
     else
     {
-        cout << "\n!!! invalid command !!!" << endl;
+        cout << "\n!!! invalid command !!!" << command <<  endl;
         return "!!! invalid command !!!";
     }
 }
@@ -380,7 +380,7 @@ string WinState::handleCommand(GameEngine& engine, const string& command)
     }
     else
     {
-        cout << "\n!!! invalid command !!!" << endl;
+        cout << "\n!!! invalid command !!!" << command << endl;
         return "!!! invalid command !!!";
     }
 }
