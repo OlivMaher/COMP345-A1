@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "../LoggingObserver/LoggingObserver.h"
 
 // Forward declarations
 class Player;
@@ -14,8 +15,10 @@ class Territory;
 /**
  * @brief Base Order Class
  */
-class Order {
+class Order : public Subject, public Iloggable{
 public:
+
+    string stringToLog() const override;
     // Constructors and Destructor
 
     /**
@@ -185,12 +188,14 @@ public:
 /**
  * @brief OrdersList Class
  */
-class OrdersList {
+class OrdersList : public Subject, public Iloggable{
 public:
     // Constructors and Destructor
     OrdersList();
     OrdersList(const OrdersList& other);
     ~OrdersList();
+
+    string stringToLog() const override;
 
     OrdersList& operator=(const OrdersList& other);
 

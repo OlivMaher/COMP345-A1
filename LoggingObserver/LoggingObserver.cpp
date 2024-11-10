@@ -1,8 +1,16 @@
 #include "LoggingObserver.h"
 
 // ------------------
+// Observer
+// ------------------
+Observer::Observer() {}
+
+Observer::~Observer () {}
+
+// ------------------
 // Subject
 // ------------------
+Subject::Subject() {}
 
 void Subject::attach(Observer* observer){
     observers.push_back(observer);
