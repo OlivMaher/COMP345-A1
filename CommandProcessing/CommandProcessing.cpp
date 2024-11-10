@@ -13,6 +13,7 @@ ostream & operator<< (ostream &out, const Command &cmd)
 
 // ---- CommandProcessor class definition ----
 // Constructors
+CommandProcessor::CommandProcessor() : gameEngine(nullptr) {}
 CommandProcessor::CommandProcessor(CommandProcessor& processor)
 {
     for (const auto& cmd : processor.commands)

@@ -47,6 +47,9 @@ std::ostream& operator<<(std::ostream& os, const Order& order) {
     }
     return os;
 }
+std::string Order::stringToLog() const{
+    return "Order: " + *description + ", Executed: " + (*executed ? "Yes" : "No") + ", Effect: " + *effect;
+}
 
 // Implement Deploy class methods
 // Default constructor for the Deploy class
@@ -77,6 +80,7 @@ void Deploy::execute() {
     } else {
         *effect = "Deploy order is invalid.";       // Set the effect message to indicate invalid order
     }
+    notify();
 }
 
 // Implement Advance class methods
@@ -138,6 +142,7 @@ void Bomb::execute() {       // Mark the order as executed and set the effect me
     } else {
         *effect = "Bomb order is invalid.";
     }
+    notify();
 }
 
 // Implement Blockade class methods
@@ -168,6 +173,7 @@ void Blockade::execute() {
     } else {
         *effect = "Blockade order is invalid.";
     }
+    notify();
 }
 
 // Implement Airlift class methods
@@ -198,6 +204,7 @@ void Airlift::execute() {
     } else {
         *effect = "Airlift order is invalid.";
     }
+    notify();
 }
 
 // Implement Negotiate class methods
@@ -228,6 +235,7 @@ void Negotiate::execute() {
     } else {
         *effect = "Negotiate order is invalid.";
     }
+    notify();
 }
 
 // Implement OrdersList class methods
@@ -266,6 +274,7 @@ OrdersList& OrdersList::operator=(const OrdersList& other) {            // Assig
 // Add an order to the list
 void OrdersList::add(Order* order) {
     orders->push_back(order);
+    notify();
 }
 // Remove an order from the list at the specified index
 void OrdersList::remove(int index) {
@@ -299,4 +308,12 @@ std::ostream& operator<<(std::ostream& os, const OrdersList& ordersList) {      
         os << i << ": " << *orders[i] << std::endl;
     }
     return os;
+}
+
+std::string OrdersList::stringToLog() const {
+    string log = "OrdersList: ";
+    for(const Order* order: *orders){
+        log += order->stringToLog() + ", ";
+    }
+    return log;
 }

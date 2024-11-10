@@ -13,6 +13,7 @@ void GameEngine::setCurrentState(State* newState)
 {
     delete currentState;  // Free the old state
     currentState = newState;
+    notify();
 }
 
 State* GameEngine::getCurrentState() const
@@ -31,8 +32,12 @@ string GameEngine::handleCommand(const string& command)
     if (currentState)
     {
         return currentState->handleCommand(*this, command);
+        notify();
     }
     return "No current State available";
+}
+string GameEngine::stringToLog() const{
+    return "GameEngine current state: " + currentState->getStateName();
 }
 
 // State logic implementation

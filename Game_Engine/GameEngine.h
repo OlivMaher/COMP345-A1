@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include "../LoggingObserver/LoggingObserver.h"
 
 using namespace std;
 
@@ -34,7 +35,7 @@ public:
 };
 
 // Game Engine, handles transitions and state validation
-class GameEngine
+class GameEngine : public Subject, public Iloggable
 {
 private:
     State* currentState;
@@ -53,6 +54,9 @@ public:
     friend ostream & operator<< (ostream &out, State* state);
 
     string handleCommand(const string& command);
+
+    string stringToLog() const override;
+
 };
 
 // State declarations
