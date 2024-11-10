@@ -1,0 +1,11 @@
+loadmap
+validatemap
+addplayer
+invalidcommand1
+assigncountries
+issueorder
+endissueorders
+execorder
+invalidcommand2
+win
+end

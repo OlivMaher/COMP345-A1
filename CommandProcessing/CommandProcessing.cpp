@@ -100,3 +100,46 @@ ostream& operator <<(ostream &out,const CommandProcessor& processor)
     }
     return out;
 }
+
+
+// ---- FileLineReader class definition ----
+FileLineReader::FileLineReader(const string& filename)
+{
+    file.open(filename);
+    if (!file.is_open())
+    {
+        throw std::runtime_error("Could not open file: " + filename);
+    }
+}
+
+FileLineReader::~FileLineReader()
+{
+    if (file.is_open())
+    {
+        file.close();
+    }
+}
+
+string FileLineReader::readLineFromFile()
+{
+    string line;
+    if (getline(file, line))
+    {
+        return line;
+    }
+    return "";
+}
+
+bool FileLineReader::hasMoreCommands()
+{
+    return !file.eof();
+}
+
+// ---- FileCommandProcessorAdapter class definition ----
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string &filename, GameEngine *engine)
+        : CommandProcessor(engine), fileReader(new FileLineReader(filename)) {}
+
+FileCommandProcessorAdapter::~FileCommandProcessorAdapter()
+{
+    delete fileReader;
+}

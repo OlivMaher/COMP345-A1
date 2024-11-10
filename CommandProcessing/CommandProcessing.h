@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 #include "../LoggingObserver/LoggingObserver.h"
 #include "../Game_Engine/GameEngine.h"
 
@@ -42,7 +43,9 @@ class CommandProcessor : public Subject, public Iloggable
 private:
     vector<Command> commands;
     GameEngine *gameEngine;
-    string readCommand();
+
+protected:
+    virtual string readCommand();
 
 public:
 
@@ -61,6 +64,49 @@ public:
     string stringToLog() const override{
         return "CommandProcessor: " + to_string(commands.size()) + "commands processed.";
     }
+};
+
+class FileLineReader
+{
+private:
+    ifstream file;
+
+public:
+    // Constructors
+    FileLineReader(const string &name);
+    explicit FileLineReader(const FileLineReader &reader);
+
+    // Destructor
+    ~FileLineReader();
+
+    // Other methods
+    string readLineFromFile();
+
+    bool hasMoreCommands();
+
+};
+
+class FileCommandProcessorAdapter : public CommandProcessor
+{
+private:
+    FileLineReader *fileReader;
+
+protected:
+    // Overrides the readCommand() method to read from the file instead of the console
+    string readCommand() override
+    {
+    if (fileReader && fileReader->hasMoreCommands())
+    {
+        return fileReader->readLineFromFile();
+    }
+    return ""; // No more commands to read
+}
+
+public:
+    // Constructor to initialize FileLineReader with a filename
+    FileCommandProcessorAdapter(const std::string &filename, GameEngine *engine);
+    ~FileCommandProcessorAdapter();
+
 };
 
 #endif
