@@ -2,10 +2,17 @@ CommandProcessor: 1 commands processed.
 Command: Attack, Effect: Attacked successfully
 CommandProcessor: 2 commands processed.
 Command: Defend, Effect: Defended successfully
-OrdersList: Order: Deploy, Executed: No, Effect: , 
-OrdersList: Order: Deploy, Executed: No, Effect: , Order: Advance, Executed: No, Effect: , 
+OrdersList: Order: Deploy, Executed: No, Effect: ; 
+OrdersList: Order: Deploy, Executed: No, Effect: ; Order: Advance, Executed: No, Effect: ; 
 Order: Deploy, Executed: Yes, Effect: Deploy order executed.
 GameEngine current state: MapLoadedState
 GameEngine current state: MapValidatedState
 GameEngine current state: PlayersAddedState
 GameEngine current state: AssignReinforcementsState
+GameEngine current state: IssueOrdersState
+GameEngine current state: ExecuteOrdersState
+GameEngine current state: AssignReinforcementsState
+GameEngine current state: IssueOrdersState
+GameEngine current state: ExecuteOrdersState
+GameEngine current state: WinState
+GameEngine current state: Start

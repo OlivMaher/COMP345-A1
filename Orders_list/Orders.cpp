@@ -313,7 +313,7 @@ std::ostream& operator<<(std::ostream& os, const OrdersList& ordersList) {      
 std::string OrdersList::stringToLog() const {
     string log = "OrdersList: ";
     for(const Order* order: *orders){
-        log += order->stringToLog() + ", ";
+        log += order->stringToLog() + "; ";
     }
     return log;
 }

@@ -35,20 +35,22 @@ void testLoggingObserver() {
     deployOrder->execute();
     advanceOrder->execute();
 
-    // Test GameEngine state
+    // Test GameEngine state transitions
     GameEngine gameEngine(new StartState());
     gameEngine.attach(&logObserver);
 
-    gameEngine.handleCommand("start");
     gameEngine.handleCommand("loadmap");
     gameEngine.handleCommand("validatemap");
     gameEngine.handleCommand("addplayer");
     gameEngine.handleCommand("assigncountries");
-    gameEngine.handleCommand("issueorders");
-    gameEngine.handleCommand("endissueorders");
-    gameEngine.handleCommand("executeorders");
-    gameEngine.handleCommand("endexecuteorders");
+    gameEngine.handleCommand("issueorder");
+    gameEngine.handleCommand("endissueorder");
+    gameEngine.handleCommand("execorder");
+    gameEngine.handleCommand("endexecorder");
+    gameEngine.handleCommand("issueorder");
+    gameEngine.handleCommand("endissueorder");
     gameEngine.handleCommand("win");
+    gameEngine.handleCommand("play");
 
     // Clean up
     delete deployOrder;
