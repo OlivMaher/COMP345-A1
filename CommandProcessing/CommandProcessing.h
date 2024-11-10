@@ -11,7 +11,7 @@
 using std::string;
 using std::ostream;
 
-class Command : public Subject, public Iloggable
+class Command /*: public Subject, public Iloggable*/
 {
 private:
     string command;
@@ -25,28 +25,15 @@ public:
     // Stream insertion operator
     friend ostream & operator<< (ostream &out, const Command& cmd);
 
-    void saveEffect(const string &eff)
-    {
-        effect = eff;
-        notify();
-    }
+    void saveEffect(const string &eff);    
 
     // Getter methods
-    string getCommand() const
-    {
-        return command;
-    }
+    string getCommand() const;
 
-    string getEffect() const
-    {
-        return effect;
-    }
-    string stringToLog() const override {
-        return "Command: " + command + ", Effect: " + effect;
-    }
+    string getEffect() const;
 };
 
-class CommandProcessor : public Subject, public Iloggable
+class CommandProcessor /*: public Subject, public Iloggable*/
 {
 private:
     vector<Command> commands;
@@ -63,13 +50,13 @@ public:
     // other methods
     void saveCommand(const Command& cmd);
     Command getCommand();
-    bool validate(Command& cmd);
+    string validate();
 
     friend ostream& operator << (ostream &out, const CommandProcessor& processor);
 
-    string stringToLog() const override {
+    /*string stringToLog() const override {
         return "CommandProcessor: " + to_string(commands.size()) + "commands processed.";
-    }
+    }*/
 };
 
 #endif

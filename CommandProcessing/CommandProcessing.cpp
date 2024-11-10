@@ -4,10 +4,29 @@
 Command::Command(const string& cmd) : command(cmd), effect("") {};
 Command::Command(const Command& otherCommand) : command(otherCommand.command), effect(otherCommand.effect) {};
 
+string Command::getCommand() const
+{
+    return command;
+}
+
+string Command::getEffect() const
+{
+    return effect;
+}
+/*string stringToLog() const override {
+    return "Command: " + command + ", Effect: " + effect;
+}*/
+
+void Command::saveEffect(const string &eff)
+{
+    effect = eff;
+    // notify();
+}
+
 ostream & operator<< (ostream &out, const Command &cmd)
 {
-    out << "The name of this command is: " << cmd.command << "\n";
-    out << "The effect of this command is: " << cmd.effect;
+    out << cmd.command << "\n";
+    out << "The effect of this command is: " << cmd.effect << endl;
     return out;
 }
 
@@ -35,7 +54,7 @@ string CommandProcessor::readCommand()
 void CommandProcessor::saveCommand(const Command& cmd) 
 {
     commands.push_back(cmd);
-    notify();
+    //notify();
 }
 
 // Public methods
@@ -44,38 +63,43 @@ Command CommandProcessor::getCommand()
     string cmdString = readCommand();
     Command cmd(cmdString);
     saveCommand(cmd);
-    return cmd;
+    return this->commands.back();
 }
 
-bool CommandProcessor::validate(Command &cmd)
+string CommandProcessor::validate() // Removed vector parameter
 {
-    if (gameEngine)
+    if (gameEngine && !commands.empty()) // Ensure commands is not empty
     {
-        std::string result = gameEngine->handleCommand(cmd.getCommand());
-        if (result != "!!! invalid command !!!")
+        std::string result = gameEngine->handleCommand(commands.back().getCommand());
+        if (result == "Ending game")
         {
-            cmd.saveEffect(result);
-            return true;
+            commands.back().saveEffect(result);
+            return "ending";
+        }
+        else if (result != "!!! invalid command !!!")
+        {
+            commands.back().saveEffect(result);
+            return "valid";
         }
         else
         {
-            cmd.saveEffect(result); // Save the error or status message from the GameEngine
-            return false;
+            commands.back().saveEffect(result);
+            return "invalid";
         }
     }
     else
     {
-        cmd.saveEffect("Game engine is not initialized");
-        return false;
+        return "invalid";
     }
 }
+
 
 ostream& operator <<(ostream &out,const CommandProcessor& processor)
 {
     out << "\nThe commands currently stored are: ";
-    for(auto i = processor.commands.begin(); i != processor.commands.end(); i++)
+    for (const auto& cmd : processor.commands)
     {
-        out << "\n" << *i;
+        out << "\n" <<cmd; // This will call the operator<< for Command
     }
     return out;
 }

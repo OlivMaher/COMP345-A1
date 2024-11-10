@@ -367,6 +367,12 @@ string WinState::handleCommand(GameEngine& engine, const string& command)
         cout << "Transitioning to StartState" << endl;
         return "Restarting game and State Transitioning to StartState";
     }
+    else if (command == "end")
+    {
+        // end game function
+        cout << "\nEnding Game..." << "\n";
+        return "Ending game";
+    }
     else
     {
         cout << "\n!!! invalid command !!!" << endl;

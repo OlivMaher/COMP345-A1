@@ -9,17 +9,23 @@ void testCommandProcessor()
     while(true)
     {
         cout << "\ncurrent state: " << *(engine.getCurrentState());
-        cout << "Enter command: ";
 
-        Command newCommand = cmdProcessor.getCommand();
-        if (!cmdProcessor.validate(newCommand))
+        cmdProcessor.getCommand();
+        string result = cmdProcessor.validate();
+        if (engine.getCurrentState()->getStateName() == "WinState" && result == "ending")
+        {
+            cout << "\nThank you for playing!" << endl;
+            break;
+        }
+        else if (result == "invalid")
         {
             cout << "\nTry again: ";
             continue;
         }
+
+        cout << cmdProcessor << endl;
     }
 
-    delete engineptr;
     engineptr = NULL;
 }
 
