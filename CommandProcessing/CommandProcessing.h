@@ -11,7 +11,7 @@
 using std::string;
 using std::ostream;
 
-class Command /*: public Subject, public Iloggable*/
+class Command : public Subject, public Iloggable
 {
 private:
     string command;
@@ -31,9 +31,13 @@ public:
     string getCommand() const;
 
     string getEffect() const;
+    string stringToLog() const override
+    {
+        return "Command: " + command + ", Effect: " + effect;
+    }
 };
 
-class CommandProcessor /*: public Subject, public Iloggable*/
+class CommandProcessor : public Subject, public Iloggable
 {
 private:
     vector<Command> commands;
@@ -54,9 +58,9 @@ public:
 
     friend ostream& operator << (ostream &out, const CommandProcessor& processor);
 
-    /*string stringToLog() const override {
+    string stringToLog() const override{
         return "CommandProcessor: " + to_string(commands.size()) + "commands processed.";
-    }*/
+    }
 };
 
 #endif

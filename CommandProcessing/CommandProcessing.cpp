@@ -13,14 +13,11 @@ string Command::getEffect() const
 {
     return effect;
 }
-/*string stringToLog() const override {
-    return "Command: " + command + ", Effect: " + effect;
-}*/
 
 void Command::saveEffect(const string &eff)
 {
     effect = eff;
-    // notify();
+    notify();
 }
 
 ostream & operator<< (ostream &out, const Command &cmd)
@@ -55,7 +52,7 @@ string CommandProcessor::readCommand()
 void CommandProcessor::saveCommand(const Command& cmd) 
 {
     commands.push_back(cmd);
-    //notify();
+    notify();
 }
 
 // Public methods
@@ -67,7 +64,7 @@ Command CommandProcessor::getCommand()
     return this->commands.back();
 }
 
-string CommandProcessor::validate() // Removed vector parameter
+string CommandProcessor::validate()
 {
     if (gameEngine && !commands.empty()) // Ensure commands is not empty
     {
@@ -93,7 +90,6 @@ string CommandProcessor::validate() // Removed vector parameter
         return "invalid";
     }
 }
-
 
 ostream& operator <<(ostream &out,const CommandProcessor& processor)
 {
