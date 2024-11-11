@@ -101,6 +101,7 @@ public:
  * @brief Deploy Order Class
  */
     Deploy();
+    Deploy(Player* player, Territory* target, int units);
     Deploy(const Deploy& other);
     ~Deploy();
 
@@ -108,7 +109,12 @@ public:
 
     bool validate() override;
     void execute() override;
+private:
+    Player* player;
+    Territory* target;
+    int units;
 };
+
 
 /**
  * @brief Advance Order Class
@@ -116,13 +122,19 @@ public:
 class Advance : public Order {
 public:
     Advance();
+    Advance(Player* player, Territory* source, Territory* target, int units);
     Advance(const Advance& other);
     ~Advance();
-
     Advance& operator=(const Advance& other);
 
     bool validate() override;
     void execute() override;
+
+private:
+    Player* player;
+    Territory* source;
+    Territory* target;
+    int units;
 };
 
 /**
@@ -131,13 +143,18 @@ public:
 class Bomb : public Order {
 public:
     Bomb();
+    Bomb(Player* player, Territory* target);
     Bomb(const Bomb& other);
     ~Bomb();
-
+    
     Bomb& operator=(const Bomb& other);
 
     bool validate() override;
     void execute() override;
+
+private:
+    Player* player;
+    Territory* target;
 };
 
 /**
@@ -146,6 +163,7 @@ public:
 class Blockade : public Order {
 public:
     Blockade();
+    Blockade(Player* player, Territory* target);
     Blockade(const Blockade& other);
     ~Blockade();
 
@@ -153,6 +171,10 @@ public:
 
     bool validate() override;
     void execute() override;
+
+private:
+    Player* player;
+    Territory* target;
 };
 
 /**
@@ -161,6 +183,7 @@ public:
 class Airlift : public Order {
 public:
     Airlift();
+    Airlift(Player* player, Territory* source, Territory* target, int units);
     Airlift(const Airlift& other);
     ~Airlift();
 
@@ -168,6 +191,12 @@ public:
 
     bool validate() override;
     void execute() override;
+
+private:
+    Player* player;
+    Territory* source;
+    Territory* target;
+    int units;
 };
 
 /**
@@ -176,13 +205,17 @@ public:
 class Negotiate : public Order {
 public:
     Negotiate();
+    Negotiate(Player* player, Player* targetPlayer);
     Negotiate(const Negotiate& other);
     ~Negotiate();
-
     Negotiate& operator=(const Negotiate& other);
 
     bool validate() override;
     void execute() override;
+
+private:
+    Player* player;
+    Player* targetPlayer;
 };
 
 /**
@@ -195,7 +228,6 @@ public:
     OrdersList(const OrdersList& other);
     ~OrdersList();
 
-    string stringToLog() const override;
 
     OrdersList& operator=(const OrdersList& other);
 
@@ -223,6 +255,8 @@ public:
      * @return Constant reference to the vector of order pointers
      */
     const std::vector<Order*>& getOrders() const;
+
+    std::string stringToLog() const override;
 
     // Stream Insertion Operator
 
