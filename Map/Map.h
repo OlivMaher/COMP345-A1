@@ -39,10 +39,23 @@ public:
     void setContinent(const string&);
 
     void addAdjacentTerritories(shared_ptr<Territory>);
+
     const vector<shared_ptr<Territory>>& getAdjacentTerritories() const;
+
+    inline void addArmies(int num) {
+        armies += num;
+    }
+
+    inline void removeArmies(int num) {
+        armies = std::max(0, armies - num); // Prevent negative armies
+    }
+
+    bool isAdjacent(Territory* other) const;
 
     // Operator overloading for printing
     friend ostream& operator<<(ostream& os, const Territory& territory);
+
+
 };
 
 class Continent {
