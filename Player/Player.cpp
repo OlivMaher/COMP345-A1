@@ -111,3 +111,21 @@ ostream& operator<<(ostream& out, const Player& player) {
 
     return out;
 }
+
+void Player::addNegotiatedPlayer(Player* player) {
+    negotiatedPlayers.insert(player);
+}
+
+// Check if a player has been negotiated with
+bool Player::hasNegotiatedWith(Player* player) const {
+    return negotiatedPlayers.find(player) != negotiatedPlayers.end();
+}
+
+// Clear the negotiated players for a new turn
+void Player::clearNegotiations() {
+    negotiatedPlayers.clear();
+}
+
+std::string Player::getName() const {
+    return name;
+}
