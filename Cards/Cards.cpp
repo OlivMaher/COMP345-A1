@@ -4,14 +4,26 @@
 #include <string>
 #include <cstdlib> 
 using namespace std;
+// Default constructor
+Card::Card() : CardType("Unknown") {}
 
-Card::Card() : CardType("") {}; //default constructor
-Card::Card(const char* type) : CardType(type) {} //parameterized constructor
+// Parameterized constructor
+Card::Card(const std::string& type) : CardType(type) {}
 
-Card::Card(Card& a){ //copy constructor
-    CardType = a.getCardType();
+// Copy constructor
+Card::Card(const Card& a) : CardType(a.CardType) {}
+
+// Assignment operator
+Card& Card::operator=(const Card& other) {
+    if (this != &other) {
+        CardType = other.CardType;
+    }
+    return *this;
 }
 
+std::string Card::getCardType() const {
+    return CardType;
+}
 void Card::play(Deck& deck, Hand& hand) { //uses a card from a hand, returns it to deck
     bool useCard = true;
 
@@ -45,7 +57,7 @@ void Card::play(Deck& deck, Hand& hand) { //uses a card from a hand, returns it 
                 else{ // if valid card number is given
                     Card playing = hand.handToDeck(choice-1,deck); // returns card to deck
 
-                    const char* type= playing.getCardType();
+                    const char* type= playing.getCardType().c_str();
 
                     if (type == "Bomb"){ 
                         cout << "Playing Bomb Card\n";
@@ -70,73 +82,67 @@ void Card::play(Deck& deck, Hand& hand) { //uses a card from a hand, returns it 
     }
 } 
 
-const char* Card::getCardType(){ // returns CardType
-    return CardType;
-}
 
-Deck::Deck() { //  Default constructor for deck
-    cardsInDeck =20;
-
-    const char* types[5] = {"Bomb", "Reinforcement", "Blockade", "Airlift", "Diplomacy"};
+Deck::Deck() {
+    cardsInDeck = 20;
+    std::string types[5] = {"Bomb", "Reinforcement", "Blockade", "Airlift", "Diplomacy"};
     int count = 0;
     for (int i = 0; i < 5; i++){
-        for (int j=0; j<4; j++){
+        for (int j = 0; j < 4; j++){
             cards[count++] = Card(types[i]);
         }
     }
 }
 
-Card Deck::draw(){
-    if (getDeck() <= 0){ // prevents a draw if the deck is empty
+Card Deck::draw() {
+    if (getDeck() <= 0) {
         cout << "No cards in deck.\n" << "\n";
         return Card();
-    }
-    else{
-        srand(time(0)); // used for random draw form deck
-        int ran = rand();
-        int take = ran % getDeck();
-        cout << ran << " " << take << "\n";
-        Card toRemove(cards[take]); 
+    } else {
+        srand(time(0)); // Use current time as seed for random generator
+        int take = rand() % getDeck();
+        Card toRemove = cards[take];
 
-        cards[take] = cards[getDeck()-1]; // places the last card in tha array to the position of the removed card
-        cards[getDeck()-1] = NULL;
+        // Move the last card to the position of the removed card
+        cards[take] = cards[getDeck() - 1];
 
-        int newSize = getDeck()-1;
-        setDeck(newSize); // updates the number of cards in deck
-        
-        return toRemove; // returns the card that was removed from the deck
+        setDeck(getDeck() - 1); // Decrease the size of the deck
+
+        return toRemove;
     }
 }
 
-void Deck::returnToDeck(Card& card) { // adds a card to the end of the deck
-    cards[getDeck()] = card;
-    setDeck(getDeck() + 1);
+void Deck::returnToDeck(const Card& card) {
+    if (getDeck() < 20) {
+        cards[getDeck()] = card;
+        setDeck(getDeck() + 1);
+    } else {
+        cout << "Deck is full, cannot return card.\n";
+    }
 }
 
-void Deck::showDeck(){ // displays the deck
-    if (this->getDeck() == 0){
-         cout << "Mo cards in Deck.\n";
-    }
-    else{    
+void Deck::showDeck() {
+    if (getDeck() == 0){
+        cout << "No cards in Deck.\n";
+    } else {
         cout << "Deck List\n";
         cout << "---------------------\n";
-        for (int i=0;i<(this->getDeck());i++){
-            cout << (i+1)<< ".  "<< cards[i].getCardType() <<"\n";
+        for (int i = 0; i < getDeck(); i++){
+            cout << (i + 1) << ".  " << cards[i].getCardType() << "\n";
         }
         cout << "\n";
     }
 }
 
-int Deck::getDeck(){ // returns the numbers of cards currently in the deck
+int Deck::getDeck() const {
     return cardsInDeck;
 }
 
-void Deck::setDeck(int a){ // used to change the number of cards in the deck
-    cardsInDeck =a;
+void Deck::setDeck(int a) {
+    cardsInDeck = a;
 }
 
-
-Hand::Hand() {// default constructor for hand
+Hand::Hand() {
     cardsInHand = 0;
 }
 
@@ -144,66 +150,79 @@ void Hand::takeCard(Deck& deck){
     if (getHand() >= 20){
         cout << "All cards in hand.\n\n";
     }
-    if (deck.getDeck() <= 0) {
-    cout << "No cards available in deck.\n\n";
+    else if (deck.getDeck() <= 0) {
+        cout << "No cards available in deck.\n\n";
     }
     else{
         Card take = deck.draw(); // draws a card from deck
         hand[getHand()] = take; // adds the card to the hand
-        setHand(getHand()+1); // adjusts the size of the hand
+        setHand(getHand() + 1); // adjusts the size of the hand
     }
 }
 
-void Hand::showHand(){ // displays the hand
-    if (this->getHand() == 0){
-         cout << "No cards in Hand.\n\n";
-    }
-    else{    
+void Hand::showHand() {
+    if (getHand() == 0){
+        cout << "No cards in Hand.\n\n";
+    } else {
         cout << "Current Hand\n";
         cout << "---------------------\n";
-        for (int i=0;i<(this->getHand());i++){
-            cout << (i+1)<< ".  "<< hand[i].getCardType() <<"\n";
+        for (int i = 0; i < getHand(); i++){
+            cout << (i + 1) << ".  " << hand[i].getCardType() << "\n";
         }
         cout << "\n";
     }
 }
 
-int Hand::getHand(){ // returns the numbers of cards currently in a hand
+int Hand::getHand() const {
     return cardsInHand;
 }
 
-void Hand::setHand(int a){ // used to change the number of cards in a hand
+void Hand::setHand(int a) {
     cardsInHand = a;
 }
 
-Card Hand::handToDeck(int a,Deck& deck){ // returns a card that was removed from a hand, but returned to the deck
-    if ((a < 0 || a >= getHand())){
-        //cout << totalCardsHand();
+Card Hand::handToDeck(int a, Deck& deck) {
+    if (a < 0 || a >= getHand()){
         cout << "Invalid card number.\n\n";
         return Card();
-    }
-    else{
+    } else {
         int index = a;
-        Card toRemove(hand[index]);
-        hand[index] = hand[getHand()-1];// positions the last card in the hand to the position of the removed card
-        hand[getHand()-1] = NULL;
+        Card toRemove = hand[index];
 
-        int newSize = getHand()-1;
-        setHand(newSize); // adjusts the number of cards
+        // Move the last card to the position of the removed card
+        hand[index] = hand[getHand() - 1];
+
+        setHand(getHand() - 1); // adjusts the number of cards
         deck.returnToDeck(toRemove); // returns card to deck
-        
+
         return toRemove;
     }
 }
 
-Card Hand::copyCard_Hand(int a){ // returns a copy of card from a hand based on the position of the card
-    if (a<0 || a >= getHand()){
+Card Hand::copyCard_Hand(int a) {
+    if (a < 0 || a >= getHand()){
         cout << "Nothing to return\n\n";
         return Card();
+    } else {
+        return hand[a];
     }
-    else{
-        return (Card(hand[a]));
-    }
-
 }
 
+// Copy constructor for Hand
+Hand::Hand(const Hand& other) {
+    cardsInHand = other.cardsInHand;
+    for (int i = 0; i < cardsInHand; i++) {
+        hand[i] = other.hand[i];
+    }
+}
+
+// Assignment operator for Hand
+Hand& Hand::operator=(const Hand& other) {
+    if (this != &other) {
+        cardsInHand = other.cardsInHand;
+        for (int i = 0; i < cardsInHand; i++) {
+            hand[i] = other.hand[i];
+        }
+    }
+    return *this;
+}

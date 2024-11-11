@@ -330,3 +330,11 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
     return map;
 }
 
+const vector<shared_ptr<Territory> >& Map::getTerritories() const {
+    return territories;
+}
+
+const vector<shared_ptr<Continent> >& Map::getContinents() const {
+    return continents;
+}
+

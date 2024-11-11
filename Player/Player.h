@@ -19,6 +19,7 @@ class Player{
         Hand  * pHand;
         OrdersList * ordersList;
         set<Player*> negotiatedPlayers;
+        int reinforcementPool;
     public:
         //Constructor
         Player();
@@ -28,6 +29,7 @@ class Player{
         // Destructor
         ~Player();
         string getName() const;
+         static Player* getNeutralPlayer();
 
         void addTerritory(Territory*);
 
@@ -41,6 +43,10 @@ class Player{
         void addNegotiatedPlayer(Player* player);
         bool hasNegotiatedWith(Player* player) const;
         void clearNegotiations(); // Clear negotiated players for a new turn
+
+        void setReinforcementPool(int armies);
+        int getReinforcementPool() const;
+        Hand* getHand();
 };
 
 #endif

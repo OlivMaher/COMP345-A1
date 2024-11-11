@@ -246,7 +246,7 @@ void Blockade::execute() {
     if (validate()) {
         *executed = true;
         target->setArmies(target->getArmies() * 2);
-        target->setOwner(&neutralPlayer);  // Set the owner to the neutral player
+        target->setOwner(Player::getNeutralPlayer());  // Set the owner to the neutral player
         *effect = "Blockade order executed: Territory " + target->getName() + " now belongs to the Neutral player.";
     } else {
         *effect = "Blockade order is invalid.";

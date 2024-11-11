@@ -11,11 +11,13 @@ Player::Player(): ordersList(new OrdersList())
 ,pHand(new Hand()) 
 {
     name = "Unnamed Player";
+    reinforcementPool = 0;
 }
 
 Player::Player(string name): name(name), ordersList(new OrdersList()) 
-,pHand(new Hand()) 
-{}
+,pHand(new Hand()) {
+    reinforcementPool = 0;
+}
 
 Player::Player(const Player& other){
     name = other.name;
@@ -110,4 +112,38 @@ ostream& operator<<(ostream& out, const Player& player) {
     }
 
     return out;
+}
+
+void Player::addNegotiatedPlayer(Player* player) {
+    negotiatedPlayers.insert(player);
+}
+
+// Check if a player has been negotiated with
+bool Player::hasNegotiatedWith(Player* player) const {
+    return negotiatedPlayers.find(player) != negotiatedPlayers.end();
+}
+
+// Clear the negotiated players for a new turn
+void Player::clearNegotiations() {
+    negotiatedPlayers.clear();
+}
+
+std::string Player::getName() const {
+    return name;
+}
+
+void Player::setReinforcementPool(int armies) {
+    reinforcementPool = armies;
+}
+
+int Player::getReinforcementPool() const {
+    return reinforcementPool;
+}
+
+Hand* Player::getHand() {
+    return pHand;
+}
+Player* Player::getNeutralPlayer() {
+    static Player* neutralPlayer = new Player("Neutral Player");
+    return neutralPlayer;
 }

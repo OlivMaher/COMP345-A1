@@ -94,6 +94,9 @@ public:
     
     // Operator overloading for printing
     friend ostream& operator<<(ostream& os, const Map& map);
+
+    const vector<shared_ptr<Territory> >& getTerritories() const;
+    const vector<shared_ptr<Continent> >& getContinents() const;
 };
 
 class MapLoader {

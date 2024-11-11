@@ -1,4 +1,4 @@
-#include "Cards.h"
+/* #include "Cards.h"
 #include "Cards.cpp"
 #include <cstdlib> 
 
@@ -30,3 +30,5 @@ int main(){
     testCards();
     return 0;
 }
+
+*/

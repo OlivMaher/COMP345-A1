@@ -1,12 +1,28 @@
 #include "GameEngine.h"
+#include "../CommandProcessing/CommandProcessing.h"
+#include "../Map/Map.h"
+#include <algorithm>
+#include <random>
 
 // Game Egnine implementation
-GameEngine::GameEngine(State* initialState) : currentState(initialState) {}
-GameEngine::GameEngine(GameEngine& engine) : currentState(engine.currentState){}
+GameEngine::GameEngine(State* initialState) : currentState(initialState) {
+    gameMap = nullptr;
+    deck = nullptr;
+}
+GameEngine::GameEngine(GameEngine& engine) : currentState(engine.currentState){gameMap = engine.gameMap;
+    players = engine.players;
+    deck = engine.deck;}
 
 GameEngine::~GameEngine() 
 {
     delete currentState;
+
+    delete gameMap;
+    delete deck;
+    for (Player* player : players) {
+        delete player;
+    }
+    players.clear();
 }
 
 void GameEngine::setCurrentState(State* newState) 
@@ -383,4 +399,137 @@ string WinState::handleCommand(GameEngine& engine, const string& command)
         cout << "\n!!! invalid command !!!" << command << endl;
         return "!!! invalid command !!!";
     }
+}
+void GameEngine::startupPhase()
+{
+    // Initialize gameMap, players, and deck
+    gameMap = nullptr;
+    players.clear();
+    deck = new Deck(); // Assuming Deck has a default constructor
+
+    // Create a CommandProcessor to read commands from the console
+    CommandProcessor commandProcessor(this);
+
+    bool gameStarted = false;
+
+    while (!gameStarted) {
+        // Display current state and available commands
+        cout << "\nCurrent State: " << currentState->getStateName() << endl;
+        currentState->print(cout);
+
+        // Get command from CommandProcessor
+        Command cmd = commandProcessor.getCommand();
+        string command = cmd.getCommand();
+
+        // Process the command
+        if (command.substr(0, 7) == "loadmap") {
+            // Extract filename
+            if (command.length() <= 8) {
+                cout << "Please specify a map file to load." << endl;
+                continue;
+            }
+            string filename = command.substr(8);
+
+            // Load map
+            MapLoader mapLoader;
+            Map* loadedMap = mapLoader.loadMap(filename).get();
+            if (loadedMap != nullptr) {
+                delete gameMap; // Delete previous map if any
+                gameMap = loadedMap;
+                cout << "Map '" << filename << "' loaded successfully." << endl;
+                setCurrentState(new MapLoadedState());
+            } else {
+                cout << "Failed to load map '" << filename << "'." << endl;
+            }
+        }
+        else if (command == "validatemap") {
+            if (gameMap != nullptr) {
+                if (gameMap->validateMap()) {
+                    cout << "Map is valid." << endl;
+                    setCurrentState(new MapValidatedState());
+                } else {
+                    cout << "Map is invalid." << endl;
+                }
+            } else {
+                cout << "No map loaded. Please load a map first." << endl;
+            }
+        }
+        else if (command.substr(0, 9) == "addplayer") {
+            // Extract player name
+            if (command.length() <= 10) {
+                cout << "Please specify a player name." << endl;
+                continue;
+            }
+            string playerName = command.substr(10);
+            if (players.size() < 6) {
+                Player* player = new Player(playerName);
+                players.push_back(player);
+                cout << "Player '" << playerName << "' added." << endl;
+                setCurrentState(new PlayersAddedState());
+            } else {
+                cout << "Maximum number of players reached (6)." << endl;
+            }
+        }
+        else if (command == "gamestart") {
+            if (players.size() >= 2) {
+                // Proceed to start the game
+                cout << "Starting the game..." << endl;
+
+                // a) Fairly distribute all the territories to the players
+                vector<Territory*> allTerritories;
+                for (auto& territory : gameMap->getTerritories()) {
+                    allTerritories.push_back(territory.get());
+                }
+                // Shuffle territories
+                std::random_device rd;
+                std::mt19937 g(rd());
+                std::shuffle(allTerritories.begin(), allTerritories.end(), g);
+
+                // Distribute territories
+                size_t numPlayers = players.size();
+                for (size_t i = 0; i < allTerritories.size(); ++i) {
+                    Player* player = players[i % numPlayers];
+                    player->addTerritory(allTerritories[i]);
+                    allTerritories[i]->setOwner(player);
+                }
+
+                // b) Determine randomly the order of play
+                std::shuffle(players.begin(), players.end(), g);
+                cout << "Order of play:" << endl;
+                for (size_t i = 0; i < players.size(); ++i) {
+                    cout << i + 1 << ". " << players[i]->getName() << endl;
+                }
+
+                // c) Give 50 initial army units to the players
+                for (Player* player : players) {
+                    player->setReinforcementPool(50);
+                }
+
+                // d) Let each player draw 2 initial cards from the deck
+                for (Player* player : players) {
+                    player->getHand()->takeCard(*deck);
+                    player->getHand()->takeCard(*deck);
+                }
+
+                // e) Switch the game to the play phase
+                setCurrentState(new AssignReinforcementsState());
+                cout << "Game has started! The game is now in the play phase." << endl;
+
+                gameStarted = true;
+            } else {
+                cout << "Not enough players to start the game. Need at least 2 players." << endl;
+            }
+        }
+        else {
+            cout << "Invalid command: " << command << endl;
+        }
+    }
+}
+
+vector<Player*>& GameEngine::getPlayers() {
+    return players;
+}
+
+Map* GameEngine::getMap() {
+    return gameMap;
 }

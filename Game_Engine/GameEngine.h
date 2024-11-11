@@ -4,6 +4,10 @@
 #include <iostream>
 #include <string>
 #include "../LoggingObserver/LoggingObserver.h"
+#include "../Map/Map.h"
+#include "../Player/Player.h"
+#include "../Cards/Cards.h"
+#include <vector>
 
 using namespace std;
 
@@ -20,6 +24,7 @@ public:
     State(string newName);
     State(const State& someState);
     State();
+
 
     // Virtual function for polymorphic behavior
     virtual void print(ostream& out) const {
@@ -39,12 +44,18 @@ class GameEngine : public Subject, public Iloggable
 {
 private:
     State* currentState;
+    Map* gameMap;
+    vector<Player*> players;
+    Deck* deck;
 
 public:
     // Constructors and destructor
     GameEngine(State* initialState);
     GameEngine(GameEngine& engine);
     ~GameEngine();
+    void startupPhase();
+    vector<Player*>& getPlayers();
+    Map* getMap();
 
     // Setter and Getter
     void setCurrentState(State* newState);
