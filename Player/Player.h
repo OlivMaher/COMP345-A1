@@ -3,9 +3,12 @@
 
 #include <iostream>
 #include <string>
+#include <cstdlib>
+#include <set>
 #include "../Map/Map.h"
 #include "../Orders_list/Orders.h"
 #include "../Cards/Cards.h"
+
 
 using namespace std;
 
@@ -15,6 +18,7 @@ class Player{
         vector<Territory*> territories; //List of territories controlled by the player
         Hand  * pHand;
         OrdersList * ordersList;
+        set<Player*> negotiatedPlayers;
     public:
         //Constructor
         Player();
@@ -32,9 +36,11 @@ class Player{
 
         void issueOrder(Order*);
 
-
-
        friend ostream& operator<<(ostream& out, const Player& player);
+
+        void addNegotiatedPlayer(Player* player);
+        bool hasNegotiatedWith(Player* player) const;
+        void clearNegotiations(); // Clear negotiated players for a new turn
 };
 
 #endif
