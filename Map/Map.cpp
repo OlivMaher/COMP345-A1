@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <set>
 #include "../Player/Player.h"
+#include "../Orders_list/Orders.h"
 using namespace std;
 
 //-------------
@@ -97,6 +98,17 @@ ostream& operator<<(ostream& os, const Continent& continent) {
     os << endl;
     return os;
 }
+
+bool Territory::isAdjacent(Territory* other) const {
+    for (const auto& adjacent : adjacentTerritories) {
+        if (adjacent.get() == other) { // Compare raw pointer from shared_ptr
+            return true;
+        }
+    }
+    return false;
+}
+
+
 
 //-------------
 // Map
@@ -317,3 +329,4 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
     cout << "Map loaded successfully." << endl;
     return map;
 }
+
