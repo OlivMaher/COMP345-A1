@@ -1,4 +1,9 @@
 #include "Orders.h"
+#include "../Player/Player.h"
+
+#include "../Map/Map.h"
+
+extern Player neutralPlayer;  // Declare an external instance representing the neutral player
 
 // Implement Order class methods
 
@@ -57,28 +62,35 @@ Deploy::Deploy() : Order() {
     *description = "Deploy";         // Set the description specific to Deploy
 }
 
-Deploy::Deploy(const Deploy& other) : Order(other) {}       // Copy constructor for the Deploy class
+//List Constructor
+Deploy::Deploy(Player* p, Territory* t, int u) : 
+    Order(), 
+    player(p), 
+    target(t), 
+    units(u) { *description = "Deploy"; }
+
+Deploy::Deploy(const Deploy& other) : Order(other), 
+    player(other.player), 
+    target(other.target), 
+    units(other.units) {}       // Copy constructor for the Deploy class
 
 Deploy::~Deploy() {}        // Destructor for the Deploy class
 
 Deploy& Deploy::operator=(const Deploy& other) {        // Assignment operator for the Deploy class
-    if (this != &other) {
-        Order::operator=(other);        // Use the base class assignment operator
-    }
-    return *this;
+    Order::operator=(other); return *this; 
 }
 // Validate the Deploy order
 bool Deploy::validate() {
-    // Always true, for now
-    return true;
+    return target->getOwner() == player;;
 }
 // Execute the Deploy order
 void Deploy::execute() {
-    if (validate()) {   // Mark the order as executed and set the effect message
+    if (validate()) {
         *executed = true;
-        *effect = "Deploy order executed.";
+        target->addArmies(units);
+        *effect = "Deploy order executed: " + std::to_string(units) + " units deployed to " + target->getName();
     } else {
-        *effect = "Deploy order is invalid.";       // Set the effect message to indicate invalid order
+        *effect = "Deploy order is invalid.";
     }
     notify();
 }
@@ -88,8 +100,22 @@ void Deploy::execute() {
 Advance::Advance() : Order() {
     *description = "Advance";        // Set the description specific to Advance
 }
+// list constructor
+Advance::Advance(Player* p, Territory* s, Territory* t, int u) : 
+    Order(), 
+    player(p), 
+    source(s), 
+    target(t), 
+    units(u) { *description = "Advance"; }
+
 // Copy constructor for the Advance class
-Advance::Advance(const Advance& other) : Order(other) {}
+Advance::Advance(const Advance& other) : 
+    Order(other), 
+    player(other.player), 
+    source(other.source), 
+    target(other.target), 
+    units(other.units) {}
+
 // Destructor for the Advance class
 Advance::~Advance() {}
 
@@ -100,18 +126,42 @@ Advance& Advance::operator=(const Advance& other) {     // Assignment operator f
     return *this;
 }
 // Validate the Advance order
-bool Advance::validate() {        // Always true, for now
-    return true;
-    return true;
+bool Advance::validate() {
+    return source->getOwner() == player && source->isAdjacent(target);
 }
 // Execute the Advance order
 void Advance::execute() {
-    if (validate()) {       // Mark the order as executed and set the effect message
+    if (validate()) {
         *executed = true;
-        *effect = "Advance order executed.";
+        if (target->getOwner() == player) {
+            target->addArmies(units);
+            source->removeArmies(units);
+            *effect = "Advance order executed: " + std::to_string(units) + " units moved from " + source->getName() + " to " + target->getName();
+        } else {
+            int attackingUnits = units;
+            int defendingUnits = target->getArmies();
+            int attackersLost = 0;
+            int defendersLost = 0;
+
+            for (int i = 0; i < attackingUnits; ++i) {
+                if (rand() % 100 < 60) ++defendersLost;
+            }
+            for (int i = 0; i < defendingUnits; ++i) {
+                if (rand() % 100 < 70) ++attackersLost;
+            }
+
+            if (defendersLost >= defendingUnits) {
+                target->setOwner(player);
+                target->setArmies(attackingUnits - attackersLost);
+                *effect = "Advance order executed: Territory " + target->getName() + " captured by " + player->getName();
+            } else {
+                *effect = "Advance order executed: Battle fought but " + target->getName() + " not captured.";
+            }
+        }
     } else {
-        *effect = "Advance order is invalid.";      // Set the effect message to indicate invalid order
+        *effect = "Advance order is invalid.";
     }
+    notify();
 }
 
 // Implement Bomb class methods
@@ -119,8 +169,19 @@ void Advance::execute() {
 Bomb::Bomb() : Order() {        // Set the description specific to Bomb
     *description = "Bomb";
 }
+
+//List constructor
+Bomb::Bomb(Player* p, Territory* t) : 
+Order(), 
+player(p), 
+target(t) { *description = "Bomb"; }
+
 // Copy constructor for the Bomb class
-Bomb::Bomb(const Bomb& other) : Order(other) {}
+Bomb::Bomb(const Bomb& other) : 
+Order(other), 
+player(other.player), 
+target(other.target) {}
+
 // Destructor for the Bomb class
 Bomb::~Bomb() {}
 
@@ -132,13 +193,14 @@ Bomb& Bomb::operator=(const Bomb& other) {      // Assignment operator for the B
 }
 // Validate the Bomb order
 bool Bomb::validate() {     // Placeholder validation logic; always returns true for now
-    return true;
+    return target->getOwner() != player;
 }
 // Execute the Bomb order
 void Bomb::execute() {       // Mark the order as executed and set the effect message
     if (validate()) {
         *executed = true;
-        *effect = "Bomb order executed.";
+        target->setArmies(target->getArmies() / 2);
+        *effect = "Bomb order executed: Half the armies on " + target->getName() + " have been destroyed.";
     } else {
         *effect = "Bomb order is invalid.";
     }
@@ -150,10 +212,22 @@ void Bomb::execute() {       // Mark the order as executed and set the effect me
 Blockade::Blockade() : Order() {
     *description = "Blockade";
 }
+
+// List Constructor
+Blockade::Blockade(Player* p, Territory* t) : 
+Order(), 
+player(p), 
+target(t) { *description = "Blockade"; }
+
 // Copy constructor for the Blockade class
-Blockade::Blockade(const Blockade& other) : Order(other) {}
+Blockade::Blockade(const Blockade& other) : 
+Order(other), 
+player(other.player), 
+target(other.target) {}
+
 // Destructor for the Blockade class
 Blockade::~Blockade() {}
+
 // Assignment operator for the Blockade class
 Blockade& Blockade::operator=(const Blockade& other) {
     if (this != &other) {
@@ -161,15 +235,19 @@ Blockade& Blockade::operator=(const Blockade& other) {
     }
     return *this;
 }
+
 // Validate the Blockade order
 bool Blockade::validate() {
-    return true;
+    return target->getOwner() == player;
 }
+
 // Execute the Blockade order
 void Blockade::execute() {
     if (validate()) {
         *executed = true;
-        *effect = "Blockade order executed.";
+        target->setArmies(target->getArmies() * 2);
+        target->setOwner(&neutralPlayer);  // Set the owner to the neutral player
+        *effect = "Blockade order executed: Territory " + target->getName() + " now belongs to the Neutral player.";
     } else {
         *effect = "Blockade order is invalid.";
     }
@@ -181,10 +259,26 @@ void Blockade::execute() {
 Airlift::Airlift() : Order() {
     *description = "Airlift";
 }
+
+// List Constructor
+Airlift::Airlift(Player* p, Territory* s, Territory* t, int u) : 
+    Order(), 
+    player(p), 
+    source(s), 
+    target(t), 
+    units(u) { *description = "Airlift"; }
+
 // Copy constructor for the Airlift class
-Airlift::Airlift(const Airlift& other) : Order(other) {}
+Airlift::Airlift(const Airlift& other) : 
+    Order(other), 
+    player(other.player), 
+    source(other.source), 
+    target(other.target), 
+    units(other.units) {}
+
 // Destructor for the Airlift class
 Airlift::~Airlift() {}
+
 // Assignment operator for the Airlift class
 Airlift& Airlift::operator=(const Airlift& other) {
     if (this != &other) {
@@ -192,15 +286,27 @@ Airlift& Airlift::operator=(const Airlift& other) {
     }
     return *this;
 }
+
 // Validate the Airlift order
 bool Airlift::validate() {
+    if (source->getOwner() != player || target->getOwner() != player) {
+        std::cout << "Airlift validation failed: Player does not own both source and target territories." << std::endl;
+        return false;
+    }
+    if (units > source->getArmies()) {
+        std::cout << "Airlift validation failed: Not enough units in the source territory." << std::endl;
+        return false;
+    }
     return true;
 }
+
 // Execute the Airlift order
 void Airlift::execute() {
     if (validate()) {
         *executed = true;
-        *effect = "Airlift order executed.";
+        source->removeArmies(units);
+        target->addArmies(units);
+        *effect = "Airlift order executed: " + std::to_string(units) + " units airlifted from " + source->getName() + " to " + target->getName();
     } else {
         *effect = "Airlift order is invalid.";
     }
@@ -212,10 +318,22 @@ void Airlift::execute() {
 Negotiate::Negotiate() : Order() {
     *description = "Negotiate";
 }
+
+//List Constructor
+Negotiate::Negotiate(Player* p, Player* tp) : 
+    Order(), 
+    player(p), 
+    targetPlayer(tp) { *description = "Negotiate"; }
+
 // Copy constructor for the Negotiate class
-Negotiate::Negotiate(const Negotiate& other) : Order(other) {}
+Negotiate::Negotiate(const Negotiate& other) : 
+    Order(other), 
+    player(other.player), 
+    targetPlayer(other.targetPlayer) {}
+
 // Destructor for the Negotiate class
 Negotiate::~Negotiate() {}
+
 // Assignment operator for the Negotiate class
 Negotiate& Negotiate::operator=(const Negotiate& other) {
     if (this != &other) {
@@ -223,15 +341,19 @@ Negotiate& Negotiate::operator=(const Negotiate& other) {
     }
     return *this;
 }
+
 // Validate the Negotiate order
 bool Negotiate::validate() {
-    return true;
+    return player != targetPlayer;
 }
+
 // Execute the Negotiate order
 void Negotiate::execute() {
     if (validate()) {
         *executed = true;
-        *effect = "Negotiate order executed.";
+        player->addNegotiatedPlayer(targetPlayer);
+        targetPlayer->addNegotiatedPlayer(player);
+        *effect = "Negotiate order executed: " + player->getName() + " and " + targetPlayer->getName() + " cannot attack each other for the rest of the turn.";
     } else {
         *effect = "Negotiate order is invalid.";
     }
