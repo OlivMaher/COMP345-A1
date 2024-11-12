@@ -36,7 +36,7 @@ class Player{
         const vector<Territory*>  toDefend() const; 
         const vector<Territory*>  toAttack() const;
 
-        void issueOrder(Order*);
+        void issueOrder(Deck* deck);
 
        friend ostream& operator<<(ostream& out, const Player& player);
 
@@ -44,9 +44,15 @@ class Player{
         bool hasNegotiatedWith(Player* player) const;
         void clearNegotiations(); // Clear negotiated players for a new turn
 
+        const vector<Territory *> getTerritories() const;
+
         void setReinforcementPool(int armies);
         int getReinforcementPool() const;
         Hand* getHand();
+
+        const vector<Territory*> toAttackFrom() const;
+        int get_num_orders() const;
+        Order* popOrder();
 };
 
 #endif

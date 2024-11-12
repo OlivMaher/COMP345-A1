@@ -68,6 +68,11 @@ public:
 
     string stringToLog() const override;
 
+    void mainGameLoop();
+    void reinforementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+
 };
 
 // State declarations

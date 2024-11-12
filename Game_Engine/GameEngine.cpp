@@ -56,6 +56,137 @@ string GameEngine::stringToLog() const{
     return "GameEngine current state: " + currentState->getStateName();
 }
 
+void GameEngine::mainGameLoop(){
+
+    while(players.size() > 1){
+    reinforementPhase();
+    setCurrentState(new IssueOrdersState());
+    issueOrdersPhase();
+    setCurrentState(new ExecuteOrdersState());
+    executeOrdersPhase();
+
+    //remove players with no territories
+    for (int i = 0; i< players.size(); i++) { 
+        if (players[i]->getTerritories().size() == 0){
+            players.erase(players.begin() + i);
+        }
+    }
+
+    setCurrentState(new AssignReinforcementsState());
+    }
+
+    cout << "Player " << players[0]->getName() << " has won the game!" << endl;
+
+}
+
+void GameEngine::reinforementPhase(){
+
+for (int i = 0; i< players.size(); i++) { //assuming a vector of pointers to players exist
+
+//add to check if territories are null
+    vector<Territory*> ters = players[i]->getTerritories();
+    int ters_owned = ters.size();
+    int rein_num = static_cast<int>(ters_owned /3);
+    vector <string> cont_names;
+    //find if player owns an entire continent
+    for (int j = 0; j< ters.size(); j++){
+
+        //makes sure oyu havent checked that continent already for ownership
+        string temp_name = ters[j]->getContinent();
+        if (find(cont_names.begin(),cont_names.end(), temp_name) != cont_names.end()) {
+            continue;
+        } else {
+            cont_names.push_back(temp_name);
+        }
+        //check each continent on that territory for ownership
+        shared_ptr<Continent> cont = gameMap-> findContinentByName(temp_name);
+        vector<shared_ptr<Territory>> cont_ters = cont->getTerritories();
+        string name = players[i]-> getName();
+
+        int needed = cont_ters.size();
+        int score = 0;
+        for (int k = 0; k< needed; k++){
+            if (cont_ters[k]->getName() == name){
+                needed += 1;
+                if (score = needed){
+                    //if player owns every territory on that continent give its reinforcements
+                    rein_num += cont->getBonus();
+                }
+            }
+        }
+            
+    }
+    players[i]->setReinforcementPool( min(3, rein_num));
+    cout << "Player " << players[i]->getName() << " has recieved" << players[i]->getReinforcementPool() << " reinforcements." << endl;
+}
+
+}
+
+void GameEngine::issueOrdersPhase(){
+    int still_issuing = players.size();
+    while( still_issuing > 0){
+        for (int i = 0; i< players.size(); i++) { //assuming a vector of pointers to players exist
+            players[i]-> issueOrder(deck);
+        }
+    }
+}
+
+void GameEngine::executeOrdersPhase() {
+    vector<Player*> doneDeploying;
+
+    
+    while (doneDeploying.size() < players.size()) {
+        
+        for (Player* player : players) {
+            Order* order = player->popOrder();
+            
+            if (order != nullptr) {
+                
+                // Check if the order is a Deploy order and execute it
+                if (Deploy* deployOrder = dynamic_cast<Deploy*>(order)) {
+                    deployOrder->execute();
+                }
+                else{
+                    if (find(doneDeploying.begin(), doneDeploying.end(), player) == doneDeploying.end()) {
+                        doneDeploying.push_back(player);
+                    }
+                }
+                
+                // Delete the order after execution
+                delete order;
+            }
+            else {
+                if (find(doneDeploying.begin(), doneDeploying.end(), player) == doneDeploying.end()) {
+                    doneDeploying.push_back(player);
+                }
+            }
+        }
+    }
+
+   vector<Player*> doneExecuting;
+    
+    while (doneExecuting.size() < players.size()) {
+       
+        for (Player* player : players) {
+            Order* order = player->popOrder();
+            
+            if (order != nullptr) {
+                
+                // Execute the order
+                order->execute();
+                
+                // Delete the order after execution
+                delete order;
+            }
+            else{
+                if (find(doneExecuting.begin(), doneExecuting.end(), player) == doneExecuting.end()) {
+                    doneExecuting.push_back(player);
+                }
+            }
+        }
+    }
+}
+
 // State logic implementation
 
 // State class

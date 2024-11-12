@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib> 
+#include <ctime>
 using namespace std;
 // Default constructor
 Card::Card() : CardType("Unknown") {}

@@ -54,8 +54,29 @@ void testStartupPhase()
     cout << "\nThe game has successfully moved to the play phase.\n" << endl;
 }
 
+void testMainGameLoop()
+{
+     // Create a GameEngine instance with an initial state
+    GameEngine gameEngine(new StartState());
+
+    // Start the startup phase
+    gameEngine.startupPhase();
+
+    // After the startup phase, display the game state to demonstrate steps 1-4
+
+    // Display loaded map validation status
+    if (gameEngine.getMap() != nullptr && gameEngine.getMap()->validateMap()) {
+        cout << "\nMap has been successfully loaded and validated.\n" << endl;
+    } else {
+        cout << "\nMap is not loaded or invalid.\n" << endl;
+    }
+
+    gameEngine.mainGameLoop();
+}
+
 int main()
 {
     testStartupPhase();
+    testMainGameLoop();
     return 0;
 }
