@@ -158,11 +158,11 @@ void Advance::execute() {
             } else {
                 *effect = "Advance order executed: Battle fought but " + target->getName() + " not captured.";
                 target->setArmies(defendingUnits - defendersLost);
-                if ((units - attackersLost)< 0){
+                if ((source->getArmies() - attackersLost)< 0){
                     source->setArmies(0);
                 }
                 else
-                    source->setArmies(units - attackersLost);
+                    source->setArmies(source->getArmies() - attackersLost);
             }
         }
     } else {
