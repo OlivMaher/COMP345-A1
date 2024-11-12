@@ -153,9 +153,16 @@ void Advance::execute() {
             if (defendersLost >= defendingUnits) {
                 target->setOwner(player);
                 target->setArmies(attackingUnits - attackersLost);
+                source->setArmies(units - attackersLost);
                 *effect = "Advance order executed: Territory " + target->getName() + " captured by " + player->getName();
             } else {
                 *effect = "Advance order executed: Battle fought but " + target->getName() + " not captured.";
+                target->setArmies(defendingUnits - defendersLost);
+                if ((units - attackersLost)< 0){
+                    source->setArmies(0);
+                }
+                else
+                    source->setArmies(units - attackersLost);
             }
         }
     } else {
