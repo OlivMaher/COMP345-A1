@@ -18,7 +18,8 @@
 
 
 void testOrderExecution() {
-    srand(time(0));
+
+    
     Deck deck;
     // Create the Neutral player
 
