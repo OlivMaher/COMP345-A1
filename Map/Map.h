@@ -73,7 +73,11 @@ public:
     void addTerritories(shared_ptr<Territory> territory);
     const vector<shared_ptr<Territory>>& getTerritories() const;
 
+    int getBonus() const;
+
     // Operator overloading for printing
+
+
     friend ostream& operator<<(ostream& os, const Continent& continent);
 };
 

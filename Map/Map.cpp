@@ -81,6 +81,10 @@ string Continent::getName() const {
     return name;
 }
 
+int Continent::getBonus() const {
+    return bonus;
+}
+
 void Continent::addTerritories(shared_ptr<Territory> territory) {
     territories.push_back(territory);
     //cout << "Added territory: " << territory->getName() << " to continent: " << name << endl;
