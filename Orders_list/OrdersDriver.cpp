@@ -13,8 +13,12 @@
 
 
     Player neutralPlayer("Neutral");
-    
+
+
+
+
 void testOrderExecution() {
+    srand(time(0));
     Deck deck;
     // Create the Neutral player
 
@@ -45,6 +49,7 @@ void testOrderExecution() {
     territory2->addAdjacentTerritories(territory3);
 
 // 1. Validate and execute Deploy Order
+    std::cout <<"Army in Territory 1: "<< territory1->getArmies() << endl;
     Deploy deployOrder(&player1, territory1.get(), 3);
     if (deployOrder.validate()) {
         deployOrder.execute();
@@ -52,10 +57,13 @@ void testOrderExecution() {
     } else {
         std::cout << "Deploy Order: Invalid" << std::endl;
     }
+    std::cout <<"Army in Territory 1: "<< territory1->getArmies() << endl;
 
     std::cout <<" "<<endl;
 
 // 2. Validate and execute Advance Order (defensive)
+    std::cout <<"Army in Territory 2: "<< territory2->getArmies() << endl;
+    std::cout <<"Army in Territory 1: "<< territory1->getArmies() << endl;
     Advance advanceOrder(&player1, territory1.get(), territory2.get(), 5);
     if (advanceOrder.validate()) {
         advanceOrder.execute();
@@ -63,11 +71,15 @@ void testOrderExecution() {
     } else {
         std::cout << "Advance Order (defensive): Invalid" << std::endl;
     }
+    std::cout <<"Army in Territory 1: "<< territory1->getArmies() << endl;
+    std::cout <<"Army in Territory 2: "<< territory2->getArmies() << endl;
 
     std::cout <<" "<<endl;
 
 // 3. Validate and execute Advance Order (offensive)
-    Advance attackOrder(&player1, territory2.get(), territory3.get(), 4);
+    std::cout <<"Army in Territory 2: "<< territory2->getArmies() << endl;
+    std::cout <<"Army in Territory 3: "<< territory3->getArmies() << endl;
+    Advance attackOrder(&player1, territory2.get(), territory3.get(), 6);
     if (attackOrder.validate()) {
         attackOrder.execute();
         std::cout << "Advance Order (offensive): " << attackOrder.getEffect() << std::endl;
@@ -80,10 +92,13 @@ void testOrderExecution() {
     } else {
         std::cout << "Advance Order (offensive): Invalid" << std::endl;
     }
+    std::cout <<"Army in Territory 2: "<< territory2->getArmies() << endl;
+    std::cout <<"Army in Territory 3: "<< territory3->getArmies() << endl;
 
     std::cout <<" "<<endl;
 
 // 4. Validate and execute Bomb Order
+    std::cout <<"Army in Territory 3: "<< territory3->getArmies() << endl;
     Bomb bombOrder(&player1, territory3.get());
     if (bombOrder.validate()) {
         bombOrder.execute();
@@ -91,11 +106,13 @@ void testOrderExecution() {
     } else {
         std::cout << "Bomb Order: Invalid" << std::endl;
     }
+    std::cout <<"Army in Territory 3: "<< territory3->getArmies() << endl;
     
     std::cout <<" "<<endl;
 
 
 // 5. Validate and execute Blockade Order
+    std::cout <<"Army in Territory 1: "<< territory1->getArmies() << endl;
     Blockade blockadeOrder(&player1, territory1.get());
     if (blockadeOrder.validate()) {
         blockadeOrder.execute();
@@ -104,6 +121,7 @@ void testOrderExecution() {
     } else {
         std::cout << "Blockade Order: Invalid" << std::endl;
     }
+        std::cout <<"Army in Territory 1: "<< territory1->getArmies() << endl;
     
     std::cout <<" "<<endl;
 
@@ -123,6 +141,8 @@ void testOrderExecution() {
     std::cout <<" "<<endl;
 
 // 6. Validate and execute Airlift Order
+    std::cout <<"Army in Territory 1: "<< territory1->getArmies() << endl;
+    std::cout <<"Army in Territory 2: "<< territory2->getArmies() << endl;
     airliftOrder = Airlift(&player1, territory2.get(), territory1.get(), 2);
     if (airliftOrder.validate()) {
         airliftOrder.execute();
@@ -130,6 +150,8 @@ void testOrderExecution() {
     } else {
         std::cout << "Airlift Order: Invalid" << std::endl;
     }
+        std::cout <<"Army in Territory 1: "<< territory1->getArmies() << endl;
+    std::cout <<"Army in Territory 2: "<< territory2->getArmies() << endl;
 
     std::cout <<" "<<endl;
 
