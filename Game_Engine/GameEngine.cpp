@@ -17,7 +17,7 @@ GameEngine::~GameEngine()
 {
     delete currentState;
 
-    delete gameMap;
+
     delete deck;
     for (Player* player : players) {
         delete player;
@@ -27,7 +27,7 @@ GameEngine::~GameEngine()
 
 void GameEngine::setCurrentState(State* newState) 
 {
-    delete currentState;  // Free the old state
+     // Free the old state
     currentState = newState;
     notify();
 }
@@ -339,7 +339,7 @@ void PlayersAddedState::print(ostream& out) const
 {
     out << "The available commands for this state are:" << "\n";
     out << "addplayer" << "\n";
-    out << "assigncountries" << "\n";
+    out << "gamestart" << "\n";
     out << "--------------------" << endl;
 }
 
@@ -563,9 +563,9 @@ void GameEngine::startupPhase()
 
             // Load map
             MapLoader mapLoader;
-            Map* loadedMap = mapLoader.loadMap(filename).get();
+            shared_ptr<Map> loadedMap = mapLoader.loadMap(filename);
             if (loadedMap != nullptr) {
-                delete gameMap; // Delete previous map if any
+               // Delete previous map if any
                 gameMap = loadedMap;
                 cout << "Map '" << filename << "' loaded successfully." << endl;
                 setCurrentState(new MapLoadedState());
@@ -657,10 +657,9 @@ void GameEngine::startupPhase()
     }
 }
 
+shared_ptr<Map> GameEngine::getMap() {
+    return gameMap;
+}
 vector<Player*>& GameEngine::getPlayers() {
     return players;
-}
-
-Map* GameEngine::getMap() {
-    return gameMap;
 }

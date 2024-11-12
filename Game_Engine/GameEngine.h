@@ -8,6 +8,7 @@
 #include "../Player/Player.h"
 #include "../Cards/Cards.h"
 #include <vector>
+#include <memory>
 
 using namespace std;
 
@@ -44,7 +45,7 @@ class GameEngine : public Subject, public Iloggable
 {
 private:
     State* currentState;
-    Map* gameMap;
+    shared_ptr<Map> gameMap;
     vector<Player*> players;
     Deck* deck;
 
@@ -55,7 +56,8 @@ public:
     ~GameEngine();
     void startupPhase();
     vector<Player*>& getPlayers();
-    Map* getMap();
+    shared_ptr<Map> getMap();
+
 
     // Setter and Getter
     void setCurrentState(State* newState);
