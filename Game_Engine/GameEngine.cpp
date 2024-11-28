@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <random>
 
+using namespace std;
+
 // Game Egnine implementation
 GameEngine::GameEngine(State* initialState) : currentState(initialState) {
     gameMap = nullptr;
@@ -58,28 +60,35 @@ string GameEngine::stringToLog() const{
 
 void GameEngine::mainGameLoop(){
 
-    while(players.size() > 1){
-    reinforementPhase();
-    setCurrentState(new IssueOrdersState());
-    issueOrdersPhase();
-    setCurrentState(new ExecuteOrdersState());
-    executeOrdersPhase();
+    while(true){
+        cout << "Starting round" << endl;
+        setCurrentState(new IssueOrdersState());
+        issueOrdersPhase();
+        setCurrentState(new ExecuteOrdersState());
+        cout<< "Executing Orders" << endl;
+        executeOrdersPhase();
 
-    //remove players with no territories
-    for (int i = 0; i< players.size(); i++) { 
-        if (players[i]->getTerritories().size() == 0){
-            players.erase(players.begin() + i);
+        //remove players with no territories
+        for (int i = 0; i< players.size(); i++) { 
+            if (players[i]->getTerritories().size() == 0){
+                cout<< "Player " << players[i]->getName() << " has been eliminated." << endl;
+                players.erase(players.begin() + i);
+            }
         }
-    }
 
-    setCurrentState(new AssignReinforcementsState());
+        if(players.size() == 1){
+            break;
+        }
+
+        setCurrentState(new AssignReinforcementsState());
+        reinforcementPhase();
     }
 
     cout << "Player " << players[0]->getName() << " has won the game!" << endl;
 
 }
 
-void GameEngine::reinforementPhase(){
+void GameEngine::reinforcementPhase(){
 
 for (int i = 0; i< players.size(); i++) { //assuming a vector of pointers to players exist
 
@@ -116,75 +125,104 @@ for (int i = 0; i< players.size(); i++) { //assuming a vector of pointers to pla
         }
             
     }
-    players[i]->setReinforcementPool( min(3, rein_num));
-    cout << "Player " << players[i]->getName() << " has recieved" << players[i]->getReinforcementPool() << " reinforcements." << endl;
+    players[i]->setReinforcementPool( max(3, rein_num));
+    cout << "\nPlayer " << players[i]->getName() << " has recieved " << players[i]->getReinforcementPool() << " reinforcements." << endl;
 }
 
 }
 
 void GameEngine::issueOrdersPhase(){
-    int still_issuing = players.size();
-    while( still_issuing > 0){
-        for (int i = 0; i< players.size(); i++) { //assuming a vector of pointers to players exist
-            players[i]-> issueOrder(deck);
-        }
+    cout<< "Issuing Orders" << endl;
+    for (int i = 0; i< players.size(); i++) { //assuming a vector of pointers to players exist
+        players[i]-> issueOrder(deck);
+        cout<< "Player " << players[i]->getName() << " has issued orders." << endl;
     }
 }
 
 void GameEngine::executeOrdersPhase() {
+    //keeps track of who has executed all deploy orders
     vector<Player*> doneDeploying;
+    doneDeploying.clear(); 
+    //holds all playerOrders
+    vector<vector<Order*>> playerOrders(players.size());
+    playerOrders.clear(); 
+    vector<int> ordersExecuted(players.size(), 0);
+    ordersExecuted.clear();
+
+     // Fill the vector with each player's order list
+    for (int i = 0; i < players.size(); ++i) {
+        playerOrders[i] = players[i]->getOrders();
+    }
+
 
     
     while (doneDeploying.size() < players.size()) {
-        
-        for (Player* player : players) {
-            Order* order = player->popOrder();
+
+        doneDeploying.clear(); // Clear the vector at the beginning of each iteration
+      
+        for (int i = 0; i < players.size(); i++) {
+            // Skip players who are done deploying
+            if (find(doneDeploying.begin(), doneDeploying.end(), players[i]) != doneDeploying.end()) {
+                continue;
+            }
+            Player* player = players[i];
+            Order* order = nullptr;
+            //if there are still orders left to execute for the player get next order
+            if (ordersExecuted[i] < playerOrders[i].size()) {
+                order = playerOrders[i][ordersExecuted[i]];
+            }
             
             if (order != nullptr) {
-                
-                // Check if the order is a Deploy order and execute it
-                if (Deploy* deployOrder = dynamic_cast<Deploy*>(order)) {
-                    deployOrder->execute();
-                }
-                else{
-                    if (find(doneDeploying.begin(), doneDeploying.end(), player) == doneDeploying.end()) {
-                        doneDeploying.push_back(player);
-                    }
-                }
-                
-                // Delete the order after execution
-                delete order;
-            }
-            else {
-                if (find(doneDeploying.begin(), doneDeploying.end(), player) == doneDeploying.end()) {
+                // Check if the order is a Deploy order by its description and execute it
+                if (order->getDescription() == "Deploy") {
+                    cout << "Executing Deploy order for player: " << player->getName() << endl;
+                    order->execute();
+                    ordersExecuted[i]++;
+                } else {
+                    cout<< "No deploy orders left." << endl;
                     doneDeploying.push_back(player);
                 }
+
+            } else {
+                cout<< "No deploy orders left." << endl;
+                doneDeploying.push_back(player);
             }
+            delete order;
         }
+                
     }
+        
 
    vector<Player*> doneExecuting;
+    doneExecuting.clear();
+
+    cout << "Executing other orders..." << endl;
     
     while (doneExecuting.size() < players.size()) {
        
-        for (Player* player : players) {
-            Order* order = player->popOrder();
-            
-            if (order != nullptr) {
-                
-                // Execute the order
-                order->execute();
-                
-                // Delete the order after execution
-                delete order;
+        for (int i = 0; i < players.size(); ++i) {
+            if (find(doneExecuting.begin(), doneExecuting.end(), players[i]) != doneExecuting.end()) {
+            continue;
             }
-            else{
-                if (find(doneExecuting.begin(), doneExecuting.end(), player) == doneExecuting.end()) {
-                    doneExecuting.push_back(player);
-                }
+            Player* player = players[i];
+            Order* order = nullptr;
+            if (ordersExecuted[i] < playerOrders[i].size()) {
+            order = playerOrders[i][ordersExecuted[i]];
+            }
+
+            if (order != nullptr) {
+            // Execute the order
+            order->execute();
+            ordersExecuted[i]++;
+            cout << "Executing order of type: " << order->getDescription() << " for player: " << player->getName() << endl;
+            
+            // Delete the order after execution
+            } else {
+            doneExecuting.push_back(player);
             }
         }
     }
+    
 }
 
 // State logic implementation

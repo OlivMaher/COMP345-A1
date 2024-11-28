@@ -4,18 +4,18 @@
 #include "../Cards/Cards.h"
 #include <cstdlib>
 #include <memory> 
+#include "../PlayerStrategies/PlayerStrategies.h"
 
 using namespace std;
 
 Player::Player(): ordersList(new OrdersList()) 
-,pHand(new Hand()) 
+, pHand(new Hand()), strategy(new HumanPlayerStrategy())
 {
     name = "Unnamed Player";
     reinforcementPool = 0;
 }
 
-Player::Player(string name): name(name), ordersList(new OrdersList()) 
-,pHand(new Hand()) {
+Player::Player(string name): name(name), ordersList(new OrdersList()), pHand(new Hand()), strategy(new HumanPlayerStrategy()) {
     reinforcementPool = 0;
 }
 
@@ -27,6 +27,8 @@ Player::Player(const Player& other){
     
     //pHand = new Hand(*other.pHand);
     ordersList = new OrdersList(*other.ordersList);
+    pHand = new Hand(*other.pHand);
+    strategy = new HumanPlayerStrategy();
 
 }
 
@@ -70,6 +72,11 @@ Player::~Player() {
     // Delete the ordersList if it's dynamically allocated
     delete ordersList;  // Deallocate memory for OrdersList
     delete pHand;
+    delete strategy;
+}
+
+void Player::setStrategy(PlayerStrategy* strategy) {
+    this->strategy = strategy;
 }
 
 void Player:: addTerritory(Territory* t){ 
@@ -81,8 +88,6 @@ void Player:: addTerritory(Territory* t){
 const vector<Territory *> Player:: getTerritories() const{
     return vector<Territory*>(territories);
 }
-
-
 
 
 int Player::get_num_orders() const{
@@ -116,6 +121,8 @@ const vector<Territory *> Player:: toAttack() const{
 
 
 const vector<Territory*> Player:: toAttackFrom() const {
+
+    //returns all trerritories with at least one adjacent enemy territory
     vector<Territory*> toAttackFrom;
     for (Territory* t : territories) {
         vector<shared_ptr<Territory>> adjacentsShared = t->getAdjacentTerritories();
@@ -130,97 +137,20 @@ const vector<Territory*> Player:: toAttackFrom() const {
 }
 
 void Player::issueOrder(Deck* deck) {
-    cout<< "Automatically issuing deploy orders until reinforcement pool is empty.\n";
-    while (reinforcementPool > 0) {
-        // automatically Issues deploy orders until reinforcement pool is empty 
-        for (Territory* t : toDefend()) {
-            int deployUnits = min(3, reinforcementPool);  // predetermined logic for deploying reinforcement troops
-            reinforcementPool -= deployUnits;
-            // Create and add deploy order to OrdersList
-             // Create a Deploy order
-            Deploy* deployOrder = new Deploy(this, t, deployUnits );
-            ordersList->add(deployOrder);
-        }
-    } 
-    int choice;
-    while (choice != 3) {
-        // Ask the player to choose an order
-        cout << "Would you like to either\n1). move army units between your territories\n2). attack an enemy territory\n3). neither\n";
-        cin >> choice;
-        switch (choice) {
-            case 1: {
-                cout << "Which territory would you like to move units from?\n";
-                for (int i = 0; i < territories.size(); i++) {
-                    cout << i << ". " << territories[i] << endl;
-                }
-                int terChoice;
-                cin >> terChoice;
-                cout << "How many units would you like to move?\n";
-                int units;
-                cin >> units;
-                cout << "Which territory would you like to move the units to?\n";
-                vector<shared_ptr<Territory>> adjacents = territories[terChoice]->getAdjacentTerritories();
+    cout << "Start of turn for " << name << endl;
 
-                // Remove territories owned by another player
-                adjacents.erase(
-                    std::remove_if(adjacents.begin(), adjacents.end(), [this](const shared_ptr<Territory>& t) {
-                        return t->getOwner() != this;
-                    }),
-                    adjacents.end()
-                );
+    
+    strategy -> issueOrder(this, deck, ordersList);
 
-                for (int i = 0; i < adjacents.size(); i++) {
-                    cout << i << ". " << adjacents[i] << endl;
-                }
-                int terChoice2;
-                cin >> terChoice2;
-                Territory* destination = adjacents[terChoice2].get();
-                Advance* advanceOrder = new Advance(this, territories[terChoice], destination, units);
-                ordersList->add(advanceOrder);
-                break;
-            }
-            case 2: {
-                cout<< "Which territory would you like to attack from?\n";
-                vector<Territory*> attackFromList = toAttackFrom();
-                for(int i = 0; i < attackFromList.size(); i++) {
-                    cout << i << ". " << attackFromList[i] << endl;
-                }
-                int terChoice;
-                cin >> terChoice;
-                cout << "Which territory would you like to attack ?\n";
-                for (int i = 0; i < attackFromList[terChoice]->getAdjacentTerritories().size(); i++) {
-                    cout << i << ". " << attackFromList[terChoice]->getAdjacentTerritories()[i] << endl;
-                }
-                int terChoice2;
-                cin >> terChoice2;
-                int attackUnits;
-                cout << "How many units would you like to attack with?\n";
-                cin >> attackUnits;
-                Advance* advanceOrder = new Advance(this, attackFromList[terChoice], attackFromList[terChoice]->getAdjacentTerritories()[terChoice2].get() , attackUnits);
-                ordersList->add(advanceOrder);
-                break;
-            }
-            case 3: {
-                break;
-            }
-            default:{
-                cout << "Invalid choice. Please try again.\n";
-                break;
-            }
-        }
-
-        if (pHand->getHand() > 0) {
-            pHand-> showHand();
-            cout<< "Which card would you like to use?\n";
-            int choice; // which card should be played
-            cin >> choice;
-            Card cardToPlay = pHand->copyCard_Hand(choice);
-            cardToPlay.play(*deck, *pHand); // Play the card to issue an order
-        }
-        else{
-            cout << "You have no cards to play.\n";
-        }
+    // Display the orders issued by the player
+    cout << "Orders issued by " << name << ":" << endl;
+    for (Order* order : ordersList->getOrders()) {
+        cout << *order << endl;
     }
+
+
+
+    cout << "End of turn for " << name << endl;
 
 }
 
@@ -232,6 +162,11 @@ Order* Player::popOrder() {
     ordersList->remove(0);
     return order;
 }
+
+vector<Order*> Player::getOrders() {
+    return ordersList->getOrders();
+}
+    
 
 ostream& operator<<(ostream& out, const Player& player) {
     out << "Player Name: " << player.name << endl;

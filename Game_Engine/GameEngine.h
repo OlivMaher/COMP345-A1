@@ -71,7 +71,7 @@ public:
     string stringToLog() const override;
 
     void mainGameLoop();
-    void reinforementPhase();
+    void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();
 

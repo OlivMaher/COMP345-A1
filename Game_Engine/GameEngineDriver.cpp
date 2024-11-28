@@ -62,6 +62,7 @@ void testMainGameLoop()
     // Start the startup phase
     gameEngine.startupPhase();
 
+
     // After the startup phase, display the game state to demonstrate steps 1-4
 
     // Display loaded map validation status
@@ -76,7 +77,7 @@ void testMainGameLoop()
 
 int main()
 {
-    testStartupPhase();
+    //testStartupPhase();
     testMainGameLoop();
     return 0;
 }

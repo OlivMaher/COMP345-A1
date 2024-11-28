@@ -5,12 +5,16 @@
 #include <string>
 #include <cstdlib>
 #include <set>
+#include <vector>
 #include "../Map/Map.h"
 #include "../Orders_list/Orders.h"
 #include "../Cards/Cards.h"
 
 
+
 using namespace std;
+
+class PlayerStrategy;
 
 class Player{
     private:
@@ -19,6 +23,7 @@ class Player{
         Hand  * pHand;
         OrdersList * ordersList;
         set<Player*> negotiatedPlayers;
+        PlayerStrategy* strategy;
         int reinforcementPool;
     public:
         //Constructor
@@ -31,6 +36,7 @@ class Player{
         string getName() const;
          static Player* getNeutralPlayer();
 
+        void setStrategy(PlayerStrategy* strategy);
         void addTerritory(Territory*);
 
         const vector<Territory*>  toDefend() const; 
@@ -53,6 +59,8 @@ class Player{
         const vector<Territory*> toAttackFrom() const;
         int get_num_orders() const;
         Order* popOrder();
+
+        vector<Order*> getOrders();
 };
 
 #endif
