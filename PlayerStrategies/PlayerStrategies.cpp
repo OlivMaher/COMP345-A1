@@ -14,7 +14,7 @@ using namespace std;
 //definition of the HumanPlayerStrategy class
 
 void HumanPlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList* ordersList) {
-    //clear orderList
+    //clear orderList causes crash when list has orders i.e. on the second round of order issing
     for (int i = 0; i < player->getOrders().size(); i++) {
         ordersList->remove(0);
     }
@@ -168,4 +168,152 @@ vector<Territory*> HumanPlayerStrategy::toAttackFrom(Player *player) {
         }
     }
     return toAttackFrom;
+}
+
+//definition of the AggressivePlayerStrategy class
+vector<Territory*> AggressivePlayerStrategy::toDefend(Player *player) {
+    vector<Territory*> territories;
+    territories.clear();
+    territories = player->getTerritories();
+    vector<Territory*> toDefend;
+    toDefend.clear();
+    for (int i = 0; i < territories.size(); i++) {
+        if (territories[i]->getArmies() > 1) {
+            toDefend.push_back(territories[i]);
+        }
+    }
+    return toDefend;
+}
+
+vector<Territory*> AggressivePlayerStrategy::toAttack(Player *player) {
+    vector<Territory*> territories;
+    territories.clear();
+    territories = player->getTerritories();
+    vector<Territory*> toAttack;
+    toAttack.clear();
+    for (int i = 0; i < territories.size(); i++) {
+        vector<shared_ptr<Territory>> adjacents = territories[i]->getAdjacentTerritories();
+        for (int j = 0; j < adjacents.size(); j++) {
+            if (adjacents[j]->getOwner() != player) {
+                toAttack.push_back(territories[i]);
+                break;
+            }
+        }
+    }
+    return toAttack;
+}
+
+vector<Territory*> AggressivePlayerStrategy::toAttackFrom(Player *player) {
+    vector<Territory*> territories;
+    territories.clear();
+    territories = player->getTerritories();
+    vector<Territory*> toAttackFrom;
+    toAttackFrom.clear();
+    for (int i = 0; i < territories.size(); i++) {
+        vector<shared_ptr<Territory>> adjacents = territories[i]->getAdjacentTerritories();
+        for (int j = 0; j < adjacents.size(); j++) {
+            if (adjacents[j]->getOwner() != player) {
+                toAttackFrom.push_back(territories[i]);
+                break;
+            }
+        }
+    }
+    return toAttackFrom;
+}
+
+void AggressivePlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList* ordersList) {
+    //clear orderList
+    for (int i = 0; i < player->getOrders().size(); i++) {
+        ordersList->remove(0);
+    }
+    cout<< "Start of strategy turn for " << player->getName() << endl;
+    vector<Territory*> territories;
+    territories.clear();
+    territories = toAttackFrom(player);
+    //deploy reinforcements to territory with most troops
+    //find strongest territory that has enemy adjacent territories
+    Territory* strongest = territories[0];
+    for (int i = 1; i < territories.size(); i++) {
+        if (territories[i]->getArmies() > strongest->getArmies()) {
+            strongest = territories[i];
+        }
+    }
+    Deploy* deployOrder = new Deploy(player, strongest, player->getReinforcementPool());
+    int reinforcements = player->getReinforcementPool();
+    player-> setReinforcementPool(0);
+    ordersList->add(deployOrder);
+
+    //advance armies from strongest territory 
+    vector<shared_ptr<Territory>> adjacents = strongest->getAdjacentTerritories();
+    Territory* target = adjacents[0].get();
+    int fullForce = strongest->getArmies() + reinforcements;
+    Advance* advanceOrder = new Advance(player, strongest, target, fullForce);
+    ordersList->add(advanceOrder);
+
+    Hand * pHand = player->getHand();
+    //play an aggressive card only. Play first card with type bomb
+    for (int i = 0; i < pHand->getHand(); i++) {
+        Card cardToPlay = pHand->copyCard_Hand(i);
+        if (cardToPlay.getCardType() == "Bomb") {
+            cardToPlay.play(*deck, *pHand);
+            break;
+        }
+    }
+
+}
+
+vector<Territory*> BenevolentPlayerStrategy::toDefend(Player *player) {
+    return player->getTerritories();
+}
+
+vector<Territory*> BenevolentPlayerStrategy::toAttack(Player *player) {
+    vector<Territory*> territories;
+    territories.clear();
+    territories = player->getTerritories();
+    vector<Territory*> toAttack;
+    toAttack.clear();
+    for (int i = 0; i < territories.size(); i++) {
+        vector<shared_ptr<Territory>> adjacents = territories[i]->getAdjacentTerritories();
+        for (int j = 0; j < adjacents.size(); j++) {
+            if (adjacents[j]->getOwner() != player) {
+                toAttack.push_back(territories[i]);
+                break;
+            }
+        }
+    }
+    return toAttack;
+}
+
+void BenevolentPlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList* ordersList) {
+    //clear orderList
+    for (int i = 0; i < player->getOrders().size(); i++) {
+        ordersList->remove(0);
+    }
+    cout<< "Start of strategy turn for " << player->getName() << endl;
+    vector<Territory*> territories;
+    territories.clear();
+    territories = toDefend(player);
+    //deploy reinforcements to territory with least troops
+    //find weakest territory
+    Territory* weakest = territories[0];
+    for (int i = 1; i < territories.size(); i++) {
+        if (territories[i]->getArmies() < weakest->getArmies()) {
+            weakest = territories[i];
+        }
+    }
+    Deploy* deployOrder = new Deploy(player, weakest, player->getReinforcementPool());
+    int reinforcements = player->getReinforcementPool();
+    player-> setReinforcementPool(0);
+    ordersList->add(deployOrder);
+
+    Hand * pHand = player->getHand();
+    //play a benevolent card only. Play first card with type reinforcement
+    for (int i = 0; i < pHand->getHand(); i++) {
+        Card cardToPlay = pHand->copyCard_Hand(i);
+        if (cardToPlay.getCardType() != "Bomb") {
+            cardToPlay.play(*deck, *pHand);
+            break;
+        }
+    }
+
 }

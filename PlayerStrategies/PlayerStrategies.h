@@ -35,4 +35,20 @@ class HumanPlayerStrategy : public PlayerStrategy {
 
 };
 
+class AggressivePlayerStrategy : public PlayerStrategy {
+    public:
+        void issueOrder(Player *player, Deck *deck, OrdersList* ordersList) override;
+        vector<Territory*> toDefend(Player *player) override;
+        vector<Territory*> toAttack(Player *player) override;
+        vector<Territory*> toAttackFrom(Player *player) ;
+};
+
+class BenevolentPlayerStrategy : public PlayerStrategy {
+    public:
+        void issueOrder(Player *player, Deck *deck, OrdersList* ordersList) override;
+        vector<Territory*> toDefend(Player *player) override;
+        vector<Territory*> toAttack(Player *player) override;
+        
+};
+
 #endif
