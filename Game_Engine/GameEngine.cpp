@@ -73,6 +73,7 @@ void GameEngine::mainGameLoop(){
             if (players[i]->getTerritories().size() == 0){
                 cout<< "Player " << players[i]->getName() << " has been eliminated." << endl;
                 players.erase(players.begin() + i);
+                i--;
             }
         }
 

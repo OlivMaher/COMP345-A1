@@ -20,6 +20,51 @@ void Command::saveEffect(const string &eff)
     notify();
 }
 
+bool CommandProcessor::processTournamentCommand(const Command& cmd){
+    istringstream iss(cmd.getCommand());
+    string token;
+    vector<string> tokens;
+    while(iss >> token) {
+        tokens.push_back(token);
+    }
+
+    for(int i = 0; i < tokens.size(); i++){
+        cout << " " << tokens[i];
+    }
+
+    if(tokens[0] != "tournament" || tokens[1] != "-M"){
+        return false;
+    }
+    vector<string> mapFiles;
+    vector<string> playerStrategies;
+    int tokenIndex = 2;
+    for(; tokenIndex < tokens.size() && tokens[tokenIndex] != "-P"; tokenIndex++){
+        mapFiles.push_back(tokens[tokenIndex]);
+    }
+
+    if (tokens[tokenIndex] != "-P"){
+        return false;
+    }
+
+    for(; tokenIndex < token.size() && tokens[tokenIndex] != "-G"; tokenIndex++){
+        playerStrategies.push_back(tokens[tokenIndex]);
+    }
+    if (tokens[tokenIndex] != "-G"){
+        return false;
+    }
+    int numOfGames = stoi(tokens[++tokenIndex]);
+
+    tokenIndex++;
+    if (tokens[tokenIndex] != "-D"){
+        return false;
+    }
+    int maxTurns = stoi(tokens[++tokenIndex]);
+    
+    //Call start tournament function
+
+    return true;
+}
+
 ostream & operator<< (ostream &out, const Command &cmd)
 {
     out << cmd.command << "\n";

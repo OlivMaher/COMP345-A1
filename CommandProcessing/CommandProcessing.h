@@ -1,7 +1,7 @@
 #ifndef COMMAND_PROCESSING_H
 #define COMMAND_PROCESSING_H
 
-
+#include <sstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -58,6 +58,7 @@ public:
     void saveCommand(const Command& cmd);
     Command getCommand();
     string validate();
+    bool processTournamentCommand(const Command& cmd);
 
     friend ostream& operator << (ostream &out, const CommandProcessor& processor);
 

@@ -12,7 +12,7 @@ void testPlayer(){
     Advance* o1 = new Advance();
 
     p1 -> addTerritory(t1);
-    p1->issueOrder(o1);
+    //p1->issueOrder(o1);
 
     cout << *p1;
 
