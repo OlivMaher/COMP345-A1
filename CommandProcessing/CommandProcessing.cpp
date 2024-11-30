@@ -20,47 +20,59 @@ void Command::saveEffect(const string &eff)
     notify();
 }
 
-bool CommandProcessor::processTournamentCommand(const Command& cmd){
+bool CommandProcessor::processTournamentCommand(const Command& cmd) {
     istringstream iss(cmd.getCommand());
     string token;
     vector<string> tokens;
-    while(iss >> token) {
+    while (iss >> token) {
         tokens.push_back(token);
     }
 
-    for(int i = 0; i < tokens.size(); i++){
-        cout << " " << tokens[i];
-    }
-
-    if(tokens[0] != "tournament" || tokens[1] != "-M"){
+    if (tokens[0] != "tournament" || tokens[1] != "-M") {
         return false;
     }
+
     vector<string> mapFiles;
     vector<string> playerStrategies;
     int tokenIndex = 2;
-    for(; tokenIndex < tokens.size() && tokens[tokenIndex] != "-P"; tokenIndex++){
+
+    // Parse map files
+    for (; tokenIndex < tokens.size() && tokens[tokenIndex] != "-P"; ++tokenIndex) {
         mapFiles.push_back(tokens[tokenIndex]);
     }
 
-    if (tokens[tokenIndex] != "-P"){
+    if (tokenIndex >= tokens.size() || tokens[tokenIndex] != "-P") {
         return false;
     }
+    ++tokenIndex;
 
-    for(; tokenIndex < token.size() && tokens[tokenIndex] != "-G"; tokenIndex++){
+    // Parse player strategies
+    for (; tokenIndex < tokens.size() && tokens[tokenIndex] != "-G"; ++tokenIndex) {
         playerStrategies.push_back(tokens[tokenIndex]);
     }
-    if (tokens[tokenIndex] != "-G"){
-        return false;
-    }
-    int numOfGames = stoi(tokens[++tokenIndex]);
 
-    tokenIndex++;
-    if (tokens[tokenIndex] != "-D"){
+    if (tokenIndex >= tokens.size() || tokens[tokenIndex] != "-G") {
         return false;
     }
-    int maxTurns = stoi(tokens[++tokenIndex]);
-    
-    //Call start tournament function
+    ++tokenIndex;
+
+    if (tokenIndex >= tokens.size()) {
+        return false;
+    }
+    int numOfGames = stoi(tokens[tokenIndex++]);
+
+    if (tokenIndex >= tokens.size() || tokens[tokenIndex] != "-D") {
+        return false;
+    }
+    ++tokenIndex;
+
+    if (tokenIndex >= tokens.size()) {
+        return false;
+    }
+    int maxTurns = stoi(tokens[tokenIndex]);
+
+    // Call start tournament function
+    gameEngine->startTournament(mapFiles, playerStrategies, numOfGames, maxTurns);
 
     return true;
 }

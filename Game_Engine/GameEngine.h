@@ -58,7 +58,6 @@ public:
     vector<Player*>& getPlayers();
     shared_ptr<Map> getMap();
 
-
     // Setter and Getter
     void setCurrentState(State* newState);
     State* getCurrentState() const;
@@ -75,6 +74,7 @@ public:
     void issueOrdersPhase();
     void executeOrdersPhase();
 
+    void startTournament(const vector<string>& mapFiles, const vector<string>& playerStrategies, int numOfGames, int maxTurns);
 };
 
 // State declarations

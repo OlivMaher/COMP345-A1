@@ -73,9 +73,7 @@ ostream& operator<<(ostream& os, const Territory& territory) {
 // Continent
 //-------------
 
-Continent::Continent(const string& name, int bonus) : name(name), bonus(bonus) {
-    cout << "Created Continent: " << name << endl;
-}
+Continent::Continent(const string& name, int bonus) : name(name), bonus(bonus) {}
 
 string Continent::getName() const {
     return name;
@@ -87,7 +85,6 @@ int Continent::getBonus() const {
 
 void Continent::addTerritories(shared_ptr<Territory> territory) {
     territories.push_back(territory);
-    //cout << "Added territory: " << territory->getName() << " to continent: " << name << endl;
 }
 
 const vector<shared_ptr<Territory>>& Continent::getTerritories() const {
@@ -119,13 +116,11 @@ bool Territory::isAdjacent(Territory* other) const {
 //-------------
 
 Map::~Map() {
-    cout << "Map destructor called." << endl;
     // No need to manually delete territories and continents, shared_ptr takes care of it
 }
 
 bool Map::validateMap() {
     bool result = validateContinents() && validateTerritories();
-    cout << "Map validation result: " << (result ? "Valid" : "Invalid") << endl;
     return result;
 }
 
@@ -167,7 +162,6 @@ bool Map::validateContinents() {
             return false; // Not all territories in this continent were visited
         }
     }
-    cout << "Continents validated successfully." << endl;
     return true;
 }
 
@@ -183,7 +177,6 @@ bool Map::validateTerritories() {
         }
     }
     bool result = allTerritories.size() == territories.size();
-    cout << "Territories validation result: " << (result ? "Valid" : "Invalid") << endl;
     return result;
 }
 
@@ -330,7 +323,6 @@ shared_ptr<Map> MapLoader::loadMap(const string& fileName) {
         return nullptr;  // Return nullptr if validation fails
     }
 
-    cout << "Map loaded successfully." << endl;
     return map;
 }
 

@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "../CommandProcessing/CommandProcessing.h"
+#include "../PlayerStrategies/PlayerStrategies.h"
 #include "../Map/Map.h"
 #include <algorithm>
 #include <random>
@@ -224,6 +225,58 @@ void GameEngine::executeOrdersPhase() {
         }
     }
     
+}
+
+void GameEngine::startTournament(const vector<string>& mapFiles, const vector<string>& playerStrategies, int numOfGames, int maxTurns){
+    cout << "Starting Tournament Mode..." << endl;
+    cout << "M: ";
+    for (const auto& map: mapFiles){
+        cout << map << " ";
+    }
+    cout << "\nP: ";
+    for (const auto& playerStrat: playerStrategies){
+        cout << playerStrat << " ";
+    }
+    cout << "\nG: " << numOfGames << "\nD: " << maxTurns;
+
+    //Storage for results
+    vector<vector<string>> results(mapFiles.size(), vector<string>(numOfGames, "Draw"));
+    for(size_t i = 0; i < mapFiles.size(); ++i){
+
+        MapLoader maploader;
+        string mapFile = "./Map/MapFiles/"+mapFiles[i];
+        cout << mapFile << endl;
+        shared_ptr<Map> gameMap = maploader.loadMap(mapFile);
+
+        if(!gameMap){
+            cout << "Error: Couldn't open map file";
+            continue;
+        }
+
+        for(int j =0; j < numOfGames; j++){
+            
+            vector<Player*> players;
+            for(const auto& strategy: playerStrategies){
+                Player* player = new Player(strategy);
+                if (strategy == "Aggressive"){
+                    player->setStrategy(new AggressivePlayerStrategy());
+                }
+                else if (strategy == "Benevolent"){
+                    player->setStrategy(new BenevolentPlayerStrategy());
+                }
+                else if (strategy == "Neutral"){
+                    player->setStrategy(new NeutralPlayerStrategy());
+                }
+                else if(strategy == "Cheater"){
+                    player->setStrategy(new CheaterPlayerStrategy());
+                }
+                players.push_back(player);
+            }
+
+            GameEngine
+
+        }
+    }
 }
 
 // State logic implementation

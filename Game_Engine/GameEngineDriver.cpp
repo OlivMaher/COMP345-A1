@@ -75,9 +75,9 @@ void testMainGameLoop()
     gameEngine.mainGameLoop();
 }
 
-int main()
-{
+//int main()
+//{
     //testStartupPhase();
-    testMainGameLoop();
-    return 0;
-}
+//    testMainGameLoop();
+//    return 0;
+//}
