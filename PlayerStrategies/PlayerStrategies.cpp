@@ -1,13 +1,11 @@
-
-#include <iostream>
-#include <vector>
-
-
 #include "PlayerStrategies.h"
 #include "../Player/Player.h"
 #include "../Map/Map.h"
 #include "../Orders_list/Orders.h"
 #include "../Cards/Cards.h"
+
+#include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -315,5 +313,42 @@ void BenevolentPlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList
             break;
         }
     }
+}
 
+//definition of the NautralPlayerStrategy class
+void NeutralPlayerStrategy::issueOrder(Player* player, Deck* deck, OrdersList* ordersList) {
+    cout << player->getName() << " is neutral and does not issue orders." << endl;
+}
+
+std::vector<Territory*> NeutralPlayerStrategy::toDefend(Player* player) {
+    return std::vector<Territory*>(); // no territories to defend
+}
+
+std::vector<Territory*> NeutralPlayerStrategy::toAttack(Player* player) {
+    return std::vector<Territory*>(); // can't attack
+}
+
+//definition of the CheaterPlayerStrategy class
+void CheaterPlayerStrategy::issueOrder(Player* player, Deck* deck, OrdersList* ordersList) {
+    // Automatically conquer adjacent enemy territories
+    cout << player->getName() << " is cheating and conquering adjacent territories!" << endl;
+
+    const vector<Territory *> territories = player->getTerritories();
+    for (Territory* territory : territories) {
+        const std::vector<std::shared_ptr<Territory>>& adjacents = territory->getAdjacentTerritories();
+        for (const auto& adjacent : adjacents) {
+            if (adjacent->getOwner() != player) {
+                cout << "Cheating: Conquering " << adjacent->getName() << "!" << endl;
+                adjacent->setOwner(player);
+            }
+        }
+    }
+}
+
+std::vector<Territory*> CheaterPlayerStrategy::toDefend(Player* player) {
+    return std::vector<Territory*>();
+}
+
+std::vector<Territory*> CheaterPlayerStrategy::toAttack(Player* player) {
+    return std::vector<Territory*>();
 }
