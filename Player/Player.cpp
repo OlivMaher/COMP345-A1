@@ -65,14 +65,17 @@ Player& Player::operator=(const Player& other) {
 
 Player::~Player() {
     // Delete each territory in the territories vector
-    for (Territory* territory : territories) {
-        delete territory;  // Deallocate memory for each Territory
+    for (Territory* territory : territories) { // Deallocate memory for each Territory
+        territory = nullptr;  // Set to nullptr to avoid dangling pointers
     }
   
     // Delete the ordersList if it's dynamically allocated
     delete ordersList;  // Deallocate memory for OrdersList
+    ordersList = nullptr;  // Set to nullptr to avoid dangling pointers
     delete pHand;
+    pHand = nullptr;
     delete strategy;
+    strategy = nullptr;
 }
 
 void Player::setStrategy(PlayerStrategy* strategy) {

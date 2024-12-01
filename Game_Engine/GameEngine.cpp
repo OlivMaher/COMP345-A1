@@ -349,9 +349,13 @@ void GameEngine::startTournament(const vector<string>& mapFiles, const vector<st
 
             // Clean up
             delete gameEngine->deck;
-            delete gameEngine;
-            for (Player* player : players) {
-                delete player;
+            for (size_t i = 0; i < players.size(); ++i)
+            {
+                if (players[i] != nullptr)
+                {
+                    delete players[i];
+                    players[i] = nullptr;
+                }
             }
             players.clear();
             delete deck;
