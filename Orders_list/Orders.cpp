@@ -478,17 +478,23 @@ void CheaterOrder::execute() {
         *executed = true;
         cout << player->getName() << " is executing CheaterOrder and conquering adjacent territories!" << endl;
 
+        vector<Territory *> toConquer;
         const vector<Territory *> territories = player->getTerritories();
         for (Territory* territory : territories) {
-            const std::vector<std::shared_ptr<Territory>>& adjacents = territory->getAdjacentTerritories();
+            const vector<shared_ptr<Territory>>& adjacents = territory->getAdjacentTerritories();
             for (const auto& adjacent : adjacents) {
+                // Add only enemy territories
                 if (adjacent->getOwner() != player) {
-                    cout << "Cheating: Conquering " << adjacent->getName() << "!" << endl;
-                    adjacent->setOwner(player);
-                    player->addTerritory(adjacent.get());
+                    toConquer.push_back(adjacent.get());
                 }
             }
         }
+        for (Territory* target : toConquer) {
+            cout << "Cheating: Conquering " << target->getName() << "!" << endl;
+            target->setOwner(player);
+            player->addTerritory(target);
+        }
+
         *effect = "CheaterOrder executed: All adjacent enemy territories conquered.";
     } else {
         *effect = "CheaterOrder is invalid.";
