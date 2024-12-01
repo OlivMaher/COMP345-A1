@@ -16,7 +16,7 @@ void HumanPlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList* ord
     for (int i = 0; i < player->getOrders().size(); i++) {
         ordersList->remove(0);
     }
-    
+
     cout<< "Start of strategy turn for " << player->getName() << endl;
     vector<Territory*> territories;
     territories.clear();
@@ -35,7 +35,7 @@ void HumanPlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList* ord
         Deploy* deployOrder = new Deploy(player, territories[terChoice], units);
         ordersList->add(deployOrder);
         player-> setReinforcementPool(player->getReinforcementPool() - units);
-    } 
+    }
     int choice = 0;
     while (choice != 3) {
         cout<< "Hello " << player->getName() << ", it is your turn to issue orders.\n";
@@ -241,7 +241,7 @@ void AggressivePlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList
     player-> setReinforcementPool(0);
     ordersList->add(deployOrder);
 
-    //advance armies from strongest territory 
+    //advance armies from strongest territory
     vector<shared_ptr<Territory>> adjacents = strongest->getAdjacentTerritories();
     Territory* target = adjacents[0].get();
     int fullForce = strongest->getArmies() + reinforcements;
