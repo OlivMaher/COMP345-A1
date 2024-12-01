@@ -19,6 +19,8 @@ private:
     string effect;
 
 public:
+
+    bool processTournamentCommand(const Command& cmd);
     // Constructors
     Command(const string &cmd);
     Command(const Command &otherCommand);
@@ -36,6 +38,7 @@ public:
     {
         return "Command: " + command + ", Effect: " + effect;
     }
+
 };
 
 class CommandProcessor : public Subject, public Iloggable

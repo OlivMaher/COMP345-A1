@@ -7,6 +7,9 @@
 
 class Deck;
 class Hand;
+class Player;
+class OrdersList;
+
 
 class Card {
 public:
@@ -16,7 +19,9 @@ public:
     Card& operator=(const Card& other); // assignment operator
 
     void play(Deck& deck, Hand& hand); // plays a card and returns it to the deck
+    void play(Deck& deck, Hand& hand, Player* player, OrdersList* ordersList); // AI-friendly method
     std::string getCardType() const; // Card type accessor
+
 
 private:
     std::string CardType;
@@ -31,6 +36,7 @@ public:
 
     int getDeck() const;  // returns cardsInDeck
     void setDeck(int a); // updates the number of cards in the deck
+    void returnCard(Card& card);
 
 private:
     Card cards[20]; // array of cards in the deck
@@ -46,6 +52,7 @@ public:
     void setHand(int a); // updates the number of cards in the hand
     Card handToDeck(int a, Deck& deck); // returns card a to the deck
     Card copyCard_Hand(int a); // returns a copy of a card from the hand
+    void removeCard(Card& card);
 
     // Copy constructor
     Hand(const Hand& other);

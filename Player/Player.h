@@ -61,6 +61,7 @@ class Player{
         Order* popOrder();
 
         vector<Order*> getOrders();
+        OrdersList* getOrdersList();
 };
 
 #endif

@@ -1,20 +1,21 @@
-//library includes
 #include "Cards.h"
+#include "../Player/Player.h"
+#include "../Orders_list/Orders.h"
 #include <iostream>
 #include <string>
-#include <cstdlib> 
+#include <cstdlib>
 #include <ctime>
+
 using namespace std;
-// Default constructor
+
+// **Card Class Implementation**
+
 Card::Card() : CardType("Unknown") {}
 
-// Parameterized constructor
 Card::Card(const std::string& type) : CardType(type) {}
 
-// Copy constructor
 Card::Card(const Card& a) : CardType(a.CardType) {}
 
-// Assignment operator
 Card& Card::operator=(const Card& other) {
     if (this != &other) {
         CardType = other.CardType;
@@ -25,64 +26,77 @@ Card& Card::operator=(const Card& other) {
 std::string Card::getCardType() const {
     return CardType;
 }
-void Card::play(Deck& deck, Hand& hand) { //uses a card from a hand, returns it to deck
+
+// Original play method for human players
+void Card::play(Deck& deck, Hand& hand) {
     bool useCard = true;
 
-
-    while (useCard){ // loops until turn is over
-        
-        if (hand.getHand() <=0){ // case if hand is empty
-        cout << "No Cards to play.\n\n";
-        useCard = false;
-        }
-        else{
+    while (useCard) {
+        if (hand.getHand() <= 0) {
+            cout << "No Cards to play.\n\n";
+            useCard = false;
+        } else {
             cout << "Would you like to play a card? (Y/N) \n";
-            char answer ;
+            char answer;
             cin >> answer;
 
-            if (answer != 'Y'){
+            if (answer != 'Y') {
                 cout << "No card played.\n\n";
-                useCard = false; // ends function
-            }
-
-            if (answer == 'Y'){
+                useCard = false; // Ends function
+            } else {
                 useCard = true;
 
                 hand.showHand();
                 cout << "Which card would you like to use?\n";
-                int choice; // which card should be played
+                int choice; // Which card should be played
                 cin >> choice;
-                if (choice < 0 || choice > hand.getHand()){ // checks for valid card number
+                if (choice < 1 || choice > hand.getHand()) { // Checks for valid card number
                     cout << "Invalid Card.\n\n";
-                }
-                else{ // if valid card number is given
-                    Card playing = hand.handToDeck(choice-1,deck); // returns card to deck
+                } else { // If valid card number is given
+                    Card playing = hand.handToDeck(choice - 1, deck); // Returns card to deck
 
-                    const char* type= playing.getCardType().c_str();
+                    const string& type = playing.getCardType();
 
-                    if (type == "Bomb"){ 
+                    if (type == "Bomb") {
                         cout << "Playing Bomb Card\n";
-                    }
-                    if (type == "Reinforcement"){
+                    } else if (type == "Reinforcement") {
                         cout << "Playing Reinforcement Card\n";
-                    }             
-                    if (type == "Blockade"){
+                    } else if (type == "Blockade") {
                         cout << "Playing Blockade Card\n";
-                    }
-                    if (type == "Airlift"){
+                    } else if (type == "Airlift") {
                         cout << "Playing Airlift Card\n";
-                    }
-                    if (type == "Diplomacy"){
+                    } else if (type == "Diplomacy") {
                         cout << "Playing Diplomacy Card\n";
                     }
-                    cout <<"\n";
+                    cout << "\n";
                 }
-
             }
-        }   
+        }
     }
-} 
+}
 
+// AI-friendly play method
+void Card::play(Deck& deck, Hand& hand, Player* player, OrdersList* ordersList) {
+    // Implement AI logic for playing the card
+    if (this->getCardType() == "Bomb") {
+        // AI logic to select a target territory
+        vector<Territory*> toAttack = player->toAttack();
+        if (!toAttack.empty()) {
+            Territory* target = toAttack.front(); // Simplified selection
+            Order* bombOrder = new Bomb(player, target);
+            ordersList->add(bombOrder);
+            cout << "AI player " << player->getName() << " plays Bomb card on " << target->getName() << endl;
+        }
+    }
+    // Handle other card types similarly...
+
+    // Return the card to the deck
+    deck.returnCard(*this);
+    // Remove the card from the player's hand
+    hand.removeCard(*this);
+}
+
+// **Deck Class Implementation**
 
 Deck::Deck() {
     cardsInDeck = 20;
@@ -113,7 +127,7 @@ Card Deck::draw() {
     }
 }
 
-void Deck::returnToDeck(const Card& card) {
+void Deck::returnCard(Card& card) {
     if (getDeck() < 20) {
         cards[getDeck()] = card;
         setDeck(getDeck() + 1);
@@ -143,6 +157,8 @@ void Deck::setDeck(int a) {
     cardsInDeck = a;
 }
 
+// **Hand Class Implementation**
+
 Hand::Hand() {
     cardsInHand = 0;
 }
@@ -155,9 +171,9 @@ void Hand::takeCard(Deck& deck){
         cout << "No cards available in deck.\n\n";
     }
     else{
-        Card take = deck.draw(); // draws a card from deck
-        hand[getHand()] = take; // adds the card to the hand
-        setHand(getHand() + 1); // adjusts the size of the hand
+        Card take = deck.draw(); // Draws a card from deck
+        hand[getHand()] = take; // Adds the card to the hand
+        setHand(getHand() + 1); // Adjusts the size of the hand
     }
 }
 
@@ -193,8 +209,8 @@ Card Hand::handToDeck(int a, Deck& deck) {
         // Move the last card to the position of the removed card
         hand[index] = hand[getHand() - 1];
 
-        setHand(getHand() - 1); // adjusts the number of cards
-        deck.returnToDeck(toRemove); // returns card to deck
+        setHand(getHand() - 1); // Adjusts the number of cards
+        deck.returnCard(toRemove); // Returns card to deck
 
         return toRemove;
     }
@@ -206,6 +222,17 @@ Card Hand::copyCard_Hand(int a) {
         return Card();
     } else {
         return hand[a];
+    }
+}
+
+void Hand::removeCard(Card& card) {
+    for (int i = 0; i < getHand(); ++i) {
+        if (hand[i].getCardType() == card.getCardType()) {
+            // Move the last card to this position
+            hand[i] = hand[getHand() - 1];
+            setHand(getHand() - 1);
+            break;
+        }
     }
 }
 

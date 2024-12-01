@@ -9,6 +9,7 @@
 #include "../Cards/Cards.h"
 #include <vector>
 #include <memory>
+#include <random>
 
 using namespace std;
 
@@ -75,6 +76,12 @@ public:
     void executeOrdersPhase();
 
     void startTournament(const vector<string>& mapFiles, const vector<string>& playerStrategies, int numOfGames, int maxTurns);
+
+    void setMap(shared_ptr<Map> map);
+    void setPlayers(vector<Player*>& players);
+    void distributeTerritories();
+    Deck* getDeck();
+
 };
 
 // State declarations

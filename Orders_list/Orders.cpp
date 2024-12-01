@@ -446,3 +446,52 @@ std::string OrdersList::stringToLog() const {
     }
     return log;
 }
+// CheaterOrder Constructor
+CheaterOrder::CheaterOrder(Player* p) : Order(), player(p) {
+    *description = "CheaterOrder";
+}
+
+// Copy Constructor
+CheaterOrder::CheaterOrder(const CheaterOrder& other) : Order(other), player(other.player) {}
+
+// Destructor
+CheaterOrder::~CheaterOrder() {}
+
+// Assignment Operator
+CheaterOrder& CheaterOrder::operator=(const CheaterOrder& other) {
+    if (this != &other) {
+        Order::operator=(other);
+        player = other.player;
+    }
+    return *this;
+}
+
+// Validate Method
+bool CheaterOrder::validate() {
+    // CheaterOrder is always valid
+    return true;
+}
+
+// Execute Method
+void CheaterOrder::execute() {
+    if (validate()) {
+        *executed = true;
+        cout << player->getName() << " is executing CheaterOrder and conquering adjacent territories!" << endl;
+
+        const vector<Territory *> territories = player->getTerritories();
+        for (Territory* territory : territories) {
+            const std::vector<std::shared_ptr<Territory>>& adjacents = territory->getAdjacentTerritories();
+            for (const auto& adjacent : adjacents) {
+                if (adjacent->getOwner() != player) {
+                    cout << "Cheating: Conquering " << adjacent->getName() << "!" << endl;
+                    adjacent->setOwner(player);
+                    player->addTerritory(adjacent.get());
+                }
+            }
+        }
+        *effect = "CheaterOrder executed: All adjacent enemy territories conquered.";
+    } else {
+        *effect = "CheaterOrder is invalid.";
+    }
+    notify();
+}

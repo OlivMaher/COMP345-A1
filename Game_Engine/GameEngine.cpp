@@ -22,6 +22,7 @@ GameEngine::~GameEngine()
 
 
     delete deck;
+    deck = nullptr;
     for (Player* player : players) {
         delete player;
     }
@@ -60,8 +61,8 @@ string GameEngine::stringToLog() const{
 }
 
 void GameEngine::mainGameLoop(){
-
-    while(true){
+    bool gameOver = false;
+    while(!gameOver){
         cout << "Starting round" << endl;
         setCurrentState(new IssueOrdersState());
         issueOrdersPhase();
@@ -70,7 +71,7 @@ void GameEngine::mainGameLoop(){
         executeOrdersPhase();
 
         //remove players with no territories
-        for (int i = 0; i< players.size(); i++) { 
+        for (int i = 0; i< players.size(); i++) {
             if (players[i]->getTerritories().size() == 0){
                 cout<< "Player " << players[i]->getName() << " has been eliminated." << endl;
                 players.erase(players.begin() + i);
@@ -119,7 +120,7 @@ for (int i = 0; i< players.size(); i++) { //assuming a vector of pointers to pla
         for (int k = 0; k< needed; k++){
             if (cont_ters[k]->getName() == name){
                 needed += 1;
-                if (score = needed){
+                if (score ==needed){
                     //if player owns every territory on that continent give its reinforcements
                     rein_num += cont->getBonus();
                 }
@@ -189,7 +190,7 @@ void GameEngine::executeOrdersPhase() {
                 cout<< "No deploy orders left." << endl;
                 doneDeploying.push_back(player);
             }
-            delete order;
+
         }
                 
     }
@@ -200,27 +201,37 @@ void GameEngine::executeOrdersPhase() {
 
     cout << "Executing other orders..." << endl;
     
-    while (doneExecuting.size() < players.size()) {
-       
-        for (int i = 0; i < players.size(); ++i) {
-            if (find(doneExecuting.begin(), doneExecuting.end(), players[i]) != doneExecuting.end()) {
-            continue;
+    bool deployOrdersLeft = true;
+    while (deployOrdersLeft) {
+        deployOrdersLeft = false;
+        for (Player* player : players) {
+            OrdersList* ordersList = player->getOrdersList();
+            // Find and execute the next Deploy order
+            for (int i = 0; i < ordersList->getOrders().size(); ++i) {
+                Order* order = ordersList->getOrders()[i];
+                if (order->getDescription() == "Deploy") {
+                    cout << "Executing Deploy order for player: " << player->getName() << endl;
+                    order->execute();
+                    ordersList->remove(i); // removes and deletes the order
+                    deployOrdersLeft = true;
+                    break; // move to next player
+                }
             }
-            Player* player = players[i];
-            Order* order = nullptr;
-            if (ordersExecuted[i] < playerOrders[i].size()) {
-            order = playerOrders[i][ordersExecuted[i]];
-            }
+        }
+    }
 
-            if (order != nullptr) {
-            // Execute the order
-            order->execute();
-            ordersExecuted[i]++;
-            cout << "Executing order of type: " << order->getDescription() << " for player: " << player->getName() << endl;
-            
-            // Delete the order after execution
-            } else {
-            doneExecuting.push_back(player);
+    // Now execute other orders in round-robin fashion
+    bool ordersLeft = true;
+    while (ordersLeft) {
+        ordersLeft = false;
+        for (Player* player : players) {
+            OrdersList* ordersList = player->getOrdersList();
+            if (!ordersList->getOrders().empty()) {
+                Order* order = ordersList->getOrders().front();
+                cout << "Executing order of type: " << order->getDescription() << " for player: " << player->getName() << endl;
+                order->execute();
+                ordersList->remove(0); // removes and deletes the order
+                ordersLeft = true;
             }
         }
     }
@@ -273,11 +284,97 @@ void GameEngine::startTournament(const vector<string>& mapFiles, const vector<st
                 players.push_back(player);
             }
 
-            GameEngine
+                        // Initialize the game engine
+            GameEngine* gameEngine = new GameEngine(new StartState());
+            gameEngine->setMap(gameMap);
+            gameEngine->setPlayers(players);
+            gameEngine->deck = new Deck();
 
+            // Distribute territories among players
+            gameEngine->distributeTerritories();
+
+            // Set initial reinforcement pools
+            for (Player* player : players) {
+                player->setReinforcementPool(50);
+            }
+
+            // Draw initial cards
+            for (Player* player : players) {
+                player->getHand()->takeCard(*gameEngine->deck);
+                player->getHand()->takeCard(*gameEngine->deck);
+            }
+
+            // Game loop
+            bool gameOver = false;
+            int turn = 0;
+            while (!gameOver && turn < maxTurns) {
+                // Reinforcement Phase
+                gameEngine->reinforcementPhase();
+
+                // Issue Orders Phase
+                gameEngine->issueOrdersPhase();
+
+                // Execute Orders Phase
+                gameEngine->executeOrdersPhase();
+
+                // After each turn or when checking for eliminated players
+                for (auto it = players.begin(); it != players.end(); ) {
+                    if ((*it)->getTerritories().empty()) {
+                        delete *it; // Free the memory
+                        it = players.erase(it); // Remove from the vector and update the iterator
+                    } else {
+                        ++it;
+                    }
+                }
+
+                // Check for a winner
+                if (gameEngine->getPlayers().size() == 1) {
+                    gameOver = true;
+                }
+
+               ++turn;
+            }
+
+            // Determine the result
+            string result;
+            if (gameOver) {
+                result = gameEngine->getPlayers()[0]->getName();
+            } else {
+                result = "Draw";
+            }
+
+            // Record the result
+            results[i][j] = result;
+
+            // Clean up
+            delete gameEngine->deck;
+            delete gameEngine;
+            for (Player* player : players) {
+                delete player;
+            }
+            players.clear();
+            delete deck;
+            deck = nullptr;
         }
     }
+
+    cout << "\nTournament Results:\n";
+    cout << setw(15) << " " << setw(15) << "Game 1";
+    for (int g = 1; g < numOfGames; ++g) {
+        cout << setw(15) << "Game " + to_string(g + 1);
+    }
+    cout << endl;
+
+    for (size_t i = 0; i < mapFiles.size(); ++i) {
+        cout << setw(15) << mapFiles[i];
+        for (int j = 0; j < numOfGames; ++j) {
+            cout << setw(15) << results[i][j];
+        }
+        cout << endl;
+    }
 }
+
+
 
 // State logic implementation
 
@@ -754,4 +851,36 @@ shared_ptr<Map> GameEngine::getMap() {
 }
 vector<Player*>& GameEngine::getPlayers() {
     return players;
+
+
+
 }
+void GameEngine::setMap(shared_ptr<Map> map) {
+    this->gameMap = map;
+}
+
+void GameEngine::setPlayers(vector<Player*>& players) {
+    this->players = players;
+}
+
+void GameEngine::distributeTerritories() {
+    // Collect all territories from the map
+    vector<Territory*> allTerritories;
+    for (auto& territory : gameMap->getTerritories()) {
+        allTerritories.push_back(territory.get());
+    }
+
+    // Shuffle territories
+    random_device rd;
+    mt19937 g(rd());
+    shuffle(allTerritories.begin(), allTerritories.end(), g);
+
+    // Distribute territories to players
+    size_t numPlayers = players.size();
+    for (size_t i = 0; i < allTerritories.size(); ++i) {
+        Player* player = players[i % numPlayers];
+        player->addTerritory(allTerritories[i]);
+        allTerritories[i]->setOwner(player);
+    }
+}
+

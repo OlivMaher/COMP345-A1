@@ -1,57 +1,48 @@
-//using Strategy patern
+#ifndef PLAYERSTRATEGIES_H
+#define PLAYERSTRATEGIES_H
 
-//PlayerStrategies abstract class
-
-#ifndef PLAYER_STRATEGIES_H
-#define PLAYER_STRATEGIES_H
-
-#include <iostream>
-#include <string>
-#include <vector>
-#include "../Orders_list/Orders.h"
+#include "../Player/Player.h"
 #include "../Map/Map.h"
+#include "../Orders_list/Orders.h"
 #include "../Cards/Cards.h"
 
-using namespace std;
-
-class Player;
-
+#include <vector>
 
 class PlayerStrategy {
-    public:
-        virtual ~PlayerStrategy() {}
-        virtual void issueOrder(Player *player, Deck *deck, OrdersList* ordersList) = 0;
-        virtual vector<Territory*> toDefend(Player *player) = 0;
-        virtual vector<Territory*> toAttack(Player *player) = 0;
-
-
+public:
+    virtual void issueOrder(Player* player, Deck* deck, OrdersList* ordersList) = 0;
+    virtual std::vector<Territory*> toDefend(Player* player) = 0;
+    virtual std::vector<Territory*> toAttack(Player* player) = 0;
+    virtual ~PlayerStrategy() {}
 };
 
+// HumanPlayerStrategy class
 class HumanPlayerStrategy : public PlayerStrategy {
-    public:
-        void issueOrder(Player *player, Deck *deck, OrdersList* ordersList) override;
-        vector<Territory*> toDefend(Player *player) override;
-        vector<Territory*> toAttack(Player *player) override;
-        vector<Territory*> toAttackFrom(Player *player);
-
+public:
+    void issueOrder(Player* player, Deck* deck, OrdersList* ordersList) override;
+    std::vector<Territory*> toDefend(Player* player) override;
+    std::vector<Territory*> toAttack(Player* player) override;
+    std::vector<Territory*> toAttackFrom(Player* player);
 };
 
+// AggressivePlayerStrategy class
 class AggressivePlayerStrategy : public PlayerStrategy {
-    public:
-        void issueOrder(Player *player, Deck *deck, OrdersList* ordersList) override;
-        vector<Territory*> toDefend(Player *player) override;
-        vector<Territory*> toAttack(Player *player) override;
-        vector<Territory*> toAttackFrom(Player *player) ;
+public:
+    void issueOrder(Player* player, Deck* deck, OrdersList* ordersList) override;
+    std::vector<Territory*> toDefend(Player* player) override;
+    std::vector<Territory*> toAttack(Player* player) override;
+    std::vector<Territory*> toAttackFrom(Player* player);
 };
 
+// BenevolentPlayerStrategy class
 class BenevolentPlayerStrategy : public PlayerStrategy {
-    public:
-        void issueOrder(Player *player, Deck *deck, OrdersList* ordersList) override;
-        vector<Territory*> toDefend(Player *player) override;
-        vector<Territory*> toAttack(Player *player) override;
-        
+public:
+    void issueOrder(Player* player, Deck* deck, OrdersList* ordersList) override;
+    std::vector<Territory*> toDefend(Player* player) override;
+    std::vector<Territory*> toAttack(Player* player) override;
 };
 
+// NeutralPlayerStrategy class
 class NeutralPlayerStrategy : public PlayerStrategy {
 public:
     void issueOrder(Player* player, Deck* deck, OrdersList* ordersList) override;
@@ -59,6 +50,7 @@ public:
     std::vector<Territory*> toAttack(Player* player) override;
 };
 
+// CheaterPlayerStrategy class
 class CheaterPlayerStrategy : public PlayerStrategy {
 public:
     void issueOrder(Player* player, Deck* deck, OrdersList* ordersList) override;
@@ -66,4 +58,4 @@ public:
     std::vector<Territory*> toAttack(Player* player) override;
 };
 
-#endif
+#endif // PLAYERSTRATEGIES_H

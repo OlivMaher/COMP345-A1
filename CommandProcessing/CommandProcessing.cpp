@@ -28,7 +28,8 @@ bool CommandProcessor::processTournamentCommand(const Command& cmd) {
         tokens.push_back(token);
     }
 
-    if (tokens[0] != "tournament" || tokens[1] != "-M") {
+    if (tokens.size() < 9 || tokens[0] != "tournament") {
+        cout << "Invalid tournament command format." << endl;
         return false;
     }
 
@@ -70,6 +71,31 @@ bool CommandProcessor::processTournamentCommand(const Command& cmd) {
         return false;
     }
     int maxTurns = stoi(tokens[tokenIndex]);
+
+
+    // Validate number of maps
+    if (mapFiles.size() < 1 || mapFiles.size() > 5) {
+        cout << "Invalid number of maps. Must be between 1 and 5." << endl;
+        return false;
+    }
+
+    // Validate number of player strategies
+    if (playerStrategies.size() < 2 || playerStrategies.size() > 4) {
+        cout << "Invalid number of player strategies. Must be between 2 and 4." << endl;
+        return false;
+    }
+
+    // Validate number of games
+    if (numOfGames < 1 || numOfGames > 5) {
+        cout << "Invalid number of games. Must be between 1 and 5." << endl;
+        return false;
+    }
+
+    // Validate maximum number of turns
+    if (maxTurns < 10 || maxTurns > 50) {
+        cout << "Invalid number of turns. Must be between 10 and 50." << endl;
+        return false;
+    }
 
     // Call start tournament function
     gameEngine->startTournament(mapFiles, playerStrategies, numOfGames, maxTurns);

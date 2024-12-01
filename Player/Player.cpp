@@ -221,3 +221,7 @@ Player* Player::getNeutralPlayer() {
     static Player* neutralPlayer = new Player("Neutral Player");
     return neutralPlayer;
 }
+
+OrdersList* Player::getOrdersList() {
+    return ordersList;
+}

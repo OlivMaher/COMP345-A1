@@ -272,4 +272,19 @@ private:
     std::vector<Order*>* orders; /**< Pointer to the vector of Order pointers */
 };
 
+class CheaterOrder : public Order {
+private:
+    Player* player;
+
+public:
+    CheaterOrder(Player* p);
+    CheaterOrder(const CheaterOrder& other);
+    ~CheaterOrder();
+
+    CheaterOrder& operator=(const CheaterOrder& other);
+
+    bool validate();
+    void execute();
+};
+
 #endif // ORDERS_H
