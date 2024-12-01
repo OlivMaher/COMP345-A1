@@ -333,15 +333,24 @@ void CheaterPlayerStrategy::issueOrder(Player* player, Deck* deck, OrdersList* o
     // Automatically conquer adjacent enemy territories
     cout << player->getName() << " is cheating and conquering adjacent territories!" << endl;
 
-    const vector<Territory *> territories = player->getTerritories();
+    // Gather territories to conquer
+    vector<Territory*> toConquer;
+    const vector<Territory*> territories = player->getTerritories();
     for (Territory* territory : territories) {
-        const std::vector<std::shared_ptr<Territory>>& adjacents = territory->getAdjacentTerritories();
+        const vector<shared_ptr<Territory>>& adjacents = territory->getAdjacentTerritories();
         for (const auto& adjacent : adjacents) {
+
             if (adjacent->getOwner() != player) {
-                cout << "Cheating: Conquering " << adjacent->getName() << "!" << endl;
-                adjacent->setOwner(player);
+                toConquer.push_back(adjacent.get());
             }
         }
+    }
+
+
+    for (Territory* target : toConquer) {
+        cout << "Cheating: Conquering " << target->getName() << "!" << endl;
+        target->setOwner(player);
+        player->addTerritory(target);
     }
 }
 
