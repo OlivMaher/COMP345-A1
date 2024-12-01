@@ -4,6 +4,7 @@
 #include "../Map/Map.h"
 #include <algorithm>
 #include <random>
+#include <iomanip>
 
 using namespace std;
 
@@ -255,7 +256,7 @@ void GameEngine::startTournament(const vector<string>& mapFiles, const vector<st
     for(size_t i = 0; i < mapFiles.size(); ++i){
 
         MapLoader maploader;
-        string mapFile = "../Map/MapFiles/"+mapFiles[i];
+        string mapFile = "./Map/MapFiles/"+mapFiles[i];
         cout << mapFile << endl;
         shared_ptr<Map> gameMap = maploader.loadMap(mapFile);
 

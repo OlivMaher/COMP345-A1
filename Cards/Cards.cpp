@@ -88,7 +88,39 @@ void Card::play(Deck& deck, Hand& hand, Player* player, OrdersList* ordersList) 
             cout << "AI player " << player->getName() << " plays Bomb card on " << target->getName() << endl;
         }
     }
-    // Handle other card types similarly...
+    else if (this->getCardType() == "Reinforcement"){
+        player->setReinforcementPool(player->getReinforcementPool() + 5);
+        cout << "AI player " << player->getName() << " plays Reinforcement" << endl;
+    }
+    else if (this->getCardType() == "Blockade"){
+        vector<Territory*> toDefend = player->toDefend();
+        if(!toDefend.empty()){
+            Territory* target = toDefend.front();
+            Order* blockadeOrder = new Blockade(player, target);
+            ordersList->add(blockadeOrder);
+            cout << "AI player "<< player->getName() << " plays blockade on " << target->getName() << endl;
+        }
+    }
+    else if (this->getCardType() == "Airlift")
+    {
+        vector<Territory*> toDefend = player->toDefend();
+        vector<Territory*> toAttack = player->toAttack();
+        if(!toDefend.empty() && !toAttack.empty()){
+            Territory* source = toDefend.front();
+            Territory* target = toAttack.front();
+            int units = source->getArmies();
+            Order* airliftOrder = new Airlift(player, source, target, units);
+            ordersList->add(airliftOrder);
+            cout << "AI player " << player->getName() << " plays airlift from " << source->getName() << "to " << target->getName() << endl;
+        }
+    }
+    else if (this->getCardType() == "Negotiate")
+    {
+        //TODO: 
+        cout << "AI player" << player->getName() << " plays Negotiate";
+    }
+    
+    
 
     // Return the card to the deck
     deck.returnCard(*this);

@@ -110,7 +110,7 @@ void HumanPlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList* ord
 
         if (pHand->getHand() > 0) {
             Card cardToPlay = pHand->copyCard_Hand(0);
-            cardToPlay.play(*deck, *pHand); // Play the card to issue an order
+            cardToPlay.play(*deck, *pHand, player, ordersList); // Play the card to issue an order
         }
         else{
             cout << "You have no cards to play.\n";
@@ -253,7 +253,7 @@ void AggressivePlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList
     for (int i = 0; i < pHand->getHand(); i++) {
         Card cardToPlay = pHand->copyCard_Hand(i);
         if (cardToPlay.getCardType() == "Bomb") {
-            cardToPlay.play(*deck, *pHand);
+            cardToPlay.play(*deck, *pHand, player, ordersList);
             break;
         }
     }
@@ -309,7 +309,7 @@ void BenevolentPlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList
     for (int i = 0; i < pHand->getHand(); i++) {
         Card cardToPlay = pHand->copyCard_Hand(i);
         if (cardToPlay.getCardType() != "Bomb") {
-            cardToPlay.play(*deck, *pHand);
+            cardToPlay.play(*deck, *pHand, player, ordersList);
             break;
         }
     }
