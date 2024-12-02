@@ -183,23 +183,26 @@ vector<Territory*> AggressivePlayerStrategy::toDefend(Player *player) {
     return toDefend;
 }
 
-vector<Territory*> AggressivePlayerStrategy::toAttack(Player *player) {
-    vector<Territory*> territories;
-    territories.clear();
-    territories = player->getTerritories();
+vector<Territory*> AggressivePlayerStrategy::toAttack(Player* player) {
+    vector<Territory*> territories = player->getTerritories();
     vector<Territory*> toAttack;
-    toAttack.clear();
-    for (int i = 0; i < territories.size(); i++) {
-        vector<shared_ptr<Territory>> adjacents = territories[i]->getAdjacentTerritories();
-        for (int j = 0; j < adjacents.size(); j++) {
-            if (adjacents[j]->getOwner() != player) {
-                toAttack.push_back(territories[i]);
-                break;
+
+    for (Territory* territory : territories) {
+        vector<shared_ptr<Territory>> adjacents = territory->getAdjacentTerritories();
+
+        for (const auto& adjacent : adjacents) {
+            if (adjacent->getOwner() != player) {
+                // Check if the territory is already in toAttack
+                if (std::find(toAttack.begin(), toAttack.end(), adjacent.get()) == toAttack.end()) {
+                    toAttack.push_back(adjacent.get());
+                }
             }
         }
     }
+
     return toAttack;
 }
+
 
 vector<Territory*> AggressivePlayerStrategy::toAttackFrom(Player *player) {
     vector<Territory*> territories;
@@ -241,12 +244,17 @@ void AggressivePlayerStrategy::issueOrder(Player *player, Deck *deck, OrdersList
     player-> setReinforcementPool(0);
     ordersList->add(deployOrder);
 
-    //advance armies from strongest territory
+     //advance armies from strongest territory 
     vector<shared_ptr<Territory>> adjacents = strongest->getAdjacentTerritories();
-    Territory* target = adjacents[0].get();
-    int fullForce = strongest->getArmies() + reinforcements;
-    Advance* advanceOrder = new Advance(player, strongest, target, fullForce);
-    ordersList->add(advanceOrder);
+    //find a territory in adjacents that is not owned by player. This is what you want to attack
+    for(int i = 0; i < adjacents.size(); i++) {
+        if (adjacents[i]->getOwner() != player) {
+            int fullForce = strongest->getArmies() + reinforcements;
+            Advance* advanceOrder = new Advance(player, strongest, adjacents[i].get(), fullForce);
+            ordersList->add(advanceOrder);
+            break;
+        }
+    }
 
     Hand * pHand = player->getHand();
     //play an aggressive card only. Play first card with type bomb
